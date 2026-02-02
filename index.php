@@ -11,6 +11,7 @@ try {
     $db = Database::getInstance();
     $projects = $db->getProjects(6);  // Only show 6 projects
     $blogs = $db->getBlogs(4);        // Only show 4 blogs
+    $clients = $db->getClients(6);    // Get client testimonials
     $settings = $db->getAllSettings(); // Get all site settings
     
     // Parse JSON for experience and education
@@ -19,6 +20,7 @@ try {
 } catch (Exception $e) {
     $projects = [];
     $blogs = [];
+    $clients = [];
     $settings = [];
     $experience = [];
     $education = [];
@@ -122,6 +124,7 @@ function getSetting($key, $default = '') {
                     <a href="#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Home</a>
                     <a href="#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">About</a>
                     <a href="#resume" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Resume</a>
+                    <a href="#clients" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Clients</a>
                     <a href="#portfolio" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Portfolio</a>
                     <a href="#blog" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Blog</a>
                     <a href="#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Contact</a>
@@ -164,6 +167,7 @@ function getSetting($key, $default = '') {
                     <a href="#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Home</a>
                     <a href="#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">About</a>
                     <a href="#resume" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Resume</a>
+                    <a href="#clients" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Clients</a>
                     <a href="#portfolio" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Portfolio</a>
                     <a href="#blog" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Blog</a>
                     <a href="#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Contact</a>
@@ -355,6 +359,82 @@ function getSetting($key, $default = '') {
                     </svg>
                     Download Resume
                 </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients/Testimonials Section -->
+    <section id="clients" class="py-20 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Happy <span class="gradient-text">Clients</span></h2>
+                <div class="w-20 h-1 gradient-bg mx-auto rounded-full"></div>
+                <p class="text-gray-600 dark:text-gray-400 mt-4 max-w-2xl mx-auto">
+                    Don't just take my word for it. Here's what my clients have to say about working with me.
+                </p>
+            </div>
+            
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <?php if (!empty($clients)): ?>
+                    <?php foreach ($clients as $client): ?>
+                    <div class="animate-on-scroll">
+                        <div class="glass-card rounded-2xl p-8 h-full hover:scale-[1.02] transition-all duration-300 flex flex-col">
+                            <!-- Quote Icon -->
+                            <div class="mb-6">
+                                <svg class="w-10 h-10 text-purple-500/30" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                                </svg>
+                            </div>
+                            
+                            <!-- Testimonial Text -->
+                            <p class="text-gray-600 dark:text-gray-400 mb-6 flex-grow leading-relaxed">
+                                "<?= htmlspecialchars($client['testimonial']) ?>"
+                            </p>
+                            
+                            <!-- Rating Stars -->
+                            <div class="flex items-center gap-1 mb-4">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <svg class="w-5 h-5 <?= $i <= ($client['rating'] ?? 5) ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600' ?>" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                <?php endfor; ?>
+                            </div>
+                            
+                            <!-- Client Info -->
+                            <div class="flex items-center gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <div class="w-14 h-14 rounded-full gradient-bg p-0.5 flex-shrink-0">
+                                    <div class="w-full h-full rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                                        <?php if (!empty($client['logo_url'])): ?>
+                                        <img src="<?= htmlspecialchars($client['logo_url']) ?>" 
+                                             alt="<?= htmlspecialchars($client['name']) ?>"
+                                             class="w-full h-full object-cover">
+                                        <?php else: ?>
+                                        <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                            </svg>
+                                        </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 dark:text-gray-100"><?= htmlspecialchars($client['name']) ?></h4>
+                                    <?php if (!empty($client['company'])): ?>
+                                    <p class="text-sm text-purple-600 dark:text-purple-400"><?= htmlspecialchars($client['company']) ?></p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-span-full text-center py-12 text-gray-500 dark:text-gray-400">
+                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <p>No client testimonials yet. Add some clients to the database!</p>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </section>

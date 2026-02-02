@@ -188,9 +188,6 @@ class Database {
         }
     }
 
-    /**
-     * Update multiple site settings
-     */
     public function updateSettings(array $settings): bool {
         try {
             $this->connection->beginTransaction();
@@ -207,6 +204,42 @@ class Database {
             $this->connection->rollBack();
             error_log("Error updating settings: " . $e->getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Fetch all clients/testimonials from database
+     */
+    public function getClients(?int $limit = null, bool $featuredOnly = false): array {
+        try {
+            $sql = "SELECT * FROM clients";
+            if ($featuredOnly) {
+                $sql .= " WHERE is_featured = 1";
+            }
+            $sql .= " ORDER BY created_at DESC";
+            if ($limit !== null) {
+                $sql .= " LIMIT " . (int)$limit;
+            }
+            $stmt = $this->connection->query($sql);
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Error fetching clients: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Fetch a single client by ID
+     */
+    public function getClientById(int $id): ?array {
+        try {
+            $stmt = $this->connection->prepare("SELECT * FROM clients WHERE id = ?");
+            $stmt->execute([$id]);
+            $result = $stmt->fetch();
+            return $result ?: null;
+        } catch (PDOException $e) {
+            error_log("Error fetching client: " . $e->getMessage());
+            return null;
         }
     }
 
