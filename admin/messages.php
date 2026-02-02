@@ -59,10 +59,10 @@ try {
             <tbody class="divide-y divide-gray-800">
                 <?php if (!empty($messages)): ?>
                     <?php foreach ($messages as $msg): ?>
-                    <tr class="hover:bg-gray-800/30 transition-colors <?= !$msg['is_read'] ? 'bg-purple-500/5' : '' ?>">
+                    <tr class="hover:bg-gray-800/30 transition-colors <?= !($msg['is_read'] ?? 1) ? 'bg-purple-500/5' : '' ?>">
                         <td class="px-6 py-4">
                             <div>
-                                <span class="font-medium <?= !$msg['is_read'] ? 'text-white' : '' ?>"><?= htmlspecialchars($msg['sender_name']) ?></span>
+                                <span class="font-medium <?= !($msg['is_read'] ?? 1) ? 'text-white' : '' ?>"><?= htmlspecialchars($msg['sender_name']) ?></span>
                                 <p class="text-gray-500 text-sm"><?= htmlspecialchars($msg['sender_email']) ?></p>
                             </div>
                         </td>
@@ -73,7 +73,7 @@ try {
                             <span class="text-gray-400 text-sm"><?= date('M d, Y', strtotime($msg['sent_at'])) ?></span>
                         </td>
                         <td class="px-6 py-4">
-                            <?php if (!$msg['is_read']): ?>
+                            <?php if (!($msg['is_read'] ?? 1)): ?>
                             <span class="inline-flex items-center gap-1 text-xs font-medium text-purple-400 bg-purple-500/20 px-2 py-1 rounded-full">
                                 <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
                                 New

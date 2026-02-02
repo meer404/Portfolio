@@ -4,17 +4,19 @@
  */
 $pageTitle = 'View Message';
 
+// Validate ID first - before any output
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header('Location: messages.php');
     exit;
 }
 
+// Include header first to get database connection
 require_once 'includes/header.php';
-require_once 'includes/sidebar.php';
 
 $db = Database::getInstance()->getConnection();
 
-// Load message
+// Load message - before sidebar to handle redirects
+$message = null;
 try {
     $stmt = $db->prepare("SELECT * FROM messages WHERE id = ?");
     $stmt->execute([$_GET['id']]);
@@ -25,8 +27,8 @@ try {
         exit;
     }
 
-    // Mark as read
-    if (!$message['is_read']) {
+    // Mark as read (use null coalescing to handle missing is_read column)
+    if (!($message['is_read'] ?? 1)) {
         $updateStmt = $db->prepare("UPDATE messages SET is_read = 1 WHERE id = ?");
         $updateStmt->execute([$_GET['id']]);
     }
@@ -34,6 +36,9 @@ try {
     header('Location: messages.php');
     exit;
 }
+
+// Now include sidebar - this outputs HTML so no more header() calls after this
+require_once 'includes/sidebar.php';
 ?>
 
 <div class="max-w-3xl">
