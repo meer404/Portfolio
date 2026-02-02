@@ -59,9 +59,13 @@ class Database {
     /**
      * Fetch all projects from database
      */
-    public function getProjects(): array {
+    public function getProjects(?int $limit = null): array {
         try {
-            $stmt = $this->connection->query("SELECT * FROM projects ORDER BY created_at DESC");
+            $sql = "SELECT * FROM projects ORDER BY created_at DESC";
+            if ($limit !== null) {
+                $sql .= " LIMIT " . (int)$limit;
+            }
+            $stmt = $this->connection->query($sql);
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             error_log("Error fetching projects: " . $e->getMessage());
@@ -70,11 +74,30 @@ class Database {
     }
 
     /**
+     * Fetch a single project by ID
+     */
+    public function getProjectById(int $id): ?array {
+        try {
+            $stmt = $this->connection->prepare("SELECT * FROM projects WHERE id = ?");
+            $stmt->execute([$id]);
+            $result = $stmt->fetch();
+            return $result ?: null;
+        } catch (PDOException $e) {
+            error_log("Error fetching project: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Fetch all blog posts from database
      */
-    public function getBlogs(): array {
+    public function getBlogs(?int $limit = null): array {
         try {
-            $stmt = $this->connection->query("SELECT * FROM blogs ORDER BY created_at DESC");
+            $sql = "SELECT * FROM blogs ORDER BY created_at DESC";
+            if ($limit !== null) {
+                $sql .= " LIMIT " . (int)$limit;
+            }
+            $stmt = $this->connection->query($sql);
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             error_log("Error fetching blogs: " . $e->getMessage());

@@ -6,11 +6,11 @@
 
 require_once 'db.php';
 
-// Fetch data from database
+// Fetch data from database (limited for homepage)
 try {
     $db = Database::getInstance();
-    $projects = $db->getProjects();
-    $blogs = $db->getBlogs();
+    $projects = $db->getProjects(6);  // Only show 6 projects
+    $blogs = $db->getBlogs(4);        // Only show 4 blogs
 } catch (Exception $e) {
     $projects = [];
     $blogs = [];
@@ -375,6 +375,12 @@ try {
                 <p class="text-gray-600 dark:text-gray-400 mt-4 max-w-2xl mx-auto">
                     Check out some of my recent projects that showcase my skills and expertise.
                 </p>
+                <a href="projects.php" class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium mt-4 hover:gap-3 transition-all">
+                    View All Projects
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
             </div>
             
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -430,6 +436,12 @@ try {
                 <p class="text-gray-600 dark:text-gray-400 mt-4 max-w-2xl mx-auto">
                     Thoughts, tutorials, and insights on web development and technology.
                 </p>
+                <a href="blogs.php" class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium mt-4 hover:gap-3 transition-all">
+                    View All Posts
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
             </div>
             
             <div class="grid sm:grid-cols-2 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
