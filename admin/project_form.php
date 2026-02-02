@@ -1,6 +1,6 @@
 <?php
 /**
- * Project Add/Edit Form
+ * Project Add/Edit Form with Image Upload
  */
 $isEdit = isset($_GET['id']) && is_numeric($_GET['id']);
 $pageTitle = $isEdit ? 'Edit Project' : 'Add Project';
@@ -10,6 +10,9 @@ require_once 'includes/header.php';
 require_once 'includes/sidebar.php';
 
 $db = Database::getInstance()->getConnection();
+
+// Define upload directory
+$uploadDir = '../uploads/projects/';
 
 // Load project for editing
 if ($isEdit) {
@@ -31,12 +34,55 @@ if ($isEdit) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
-    $image_url = trim($_POST['image_url'] ?? '');
     $project_link = trim($_POST['project_link'] ?? '');
+    $image_url = $project['image_url'] ?? ''; // Keep existing image if no new upload
 
     $errors = [];
     if (empty($title)) $errors[] = 'Title is required';
     if (empty($description)) $errors[] = 'Description is required';
+
+    // Handle image upload
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $file = $_FILES['image'];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+
+        // Validate file type
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($mimeType, $allowedTypes)) {
+            $errors[] = 'Invalid image type. Allowed: JPG, PNG, GIF, WebP';
+        } elseif ($file['size'] > $maxSize) {
+            $errors[] = 'Image size must be less than 5MB';
+        } else {
+            // Generate unique filename
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $newFilename = uniqid('project_') . '.' . strtolower($extension);
+            $uploadPath = $uploadDir . $newFilename;
+
+            // Create directory if it doesn't exist
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+                // Delete old image if exists and is a local file
+                if ($isEdit && !empty($project['image_url']) && strpos($project['image_url'], 'uploads/projects/') !== false) {
+                    $oldImagePath = '../' . $project['image_url'];
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+                $image_url = 'uploads/projects/' . $newFilename;
+            } else {
+                $errors[] = 'Failed to upload image';
+            }
+        }
+    } elseif (!$isEdit && (!isset($_FILES['image']) || $_FILES['image']['error'] === UPLOAD_ERR_NO_FILE)) {
+        // Image is optional, so no error for new projects without image
+    }
 
     if (empty($errors)) {
         try {
@@ -71,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <div class="bg-gray-900 rounded-2xl border border-gray-800 p-6">
-        <form method="POST" class="space-y-6">
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
             <div>
                 <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Title *</label>
                 <input type="text" id="title" name="title" required
@@ -86,11 +132,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div>
-                <label for="image_url" class="block text-sm font-medium text-gray-300 mb-2">Image URL</label>
-                <input type="url" id="image_url" name="image_url"
-                       class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
-                       placeholder="https://example.com/image.jpg"
-                       value="<?= htmlspecialchars($project['image_url'] ?? $_POST['image_url'] ?? '') ?>">
+                <label for="image" class="block text-sm font-medium text-gray-300 mb-2">Project Image</label>
+                
+                <?php if ($isEdit && !empty($project['image_url'])): ?>
+                <div class="mb-4 p-4 bg-gray-800 rounded-xl">
+                    <p class="text-sm text-gray-400 mb-2">Current Image:</p>
+                    <img src="../<?= htmlspecialchars($project['image_url']) ?>" 
+                         alt="Current project image"
+                         class="w-40 h-28 object-cover rounded-lg">
+                </div>
+                <?php endif; ?>
+
+                <div class="relative">
+                    <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/gif,image/webp"
+                           class="hidden"
+                           onchange="previewImage(this)">
+                    <label for="image" class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-700 rounded-xl cursor-pointer hover:border-purple-500 hover:bg-gray-800/50 transition-all">
+                        <div id="upload-placeholder" class="flex flex-col items-center">
+                            <svg class="w-10 h-10 text-gray-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <p class="text-gray-400 text-sm">Click to upload image</p>
+                            <p class="text-gray-500 text-xs mt-1">JPG, PNG, GIF, WebP (max 5MB)</p>
+                        </div>
+                        <img id="image-preview" class="hidden w-full h-full object-contain rounded-xl" alt="Preview">
+                    </label>
+                </div>
             </div>
 
             <div>
@@ -112,5 +179,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 </div>
+
+<script>
+function previewImage(input) {
+    const preview = document.getElementById('image-preview');
+    const placeholder = document.getElementById('upload-placeholder');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 
 <?php require_once 'includes/footer.php'; ?>

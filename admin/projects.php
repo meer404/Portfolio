@@ -10,8 +10,24 @@ require_once 'includes/sidebar.php';
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     try {
         $db = Database::getInstance()->getConnection();
+        
+        // Get project details to delete image file
+        $stmt = $db->prepare("SELECT image_url FROM projects WHERE id = ?");
+        $stmt->execute([$_GET['delete']]);
+        $projectToDelete = $stmt->fetch();
+        
+        // Delete from database
         $stmt = $db->prepare("DELETE FROM projects WHERE id = ?");
         $stmt->execute([$_GET['delete']]);
+        
+        // Delete uploaded image if exists
+        if ($projectToDelete && !empty($projectToDelete['image_url']) && strpos($projectToDelete['image_url'], 'uploads/projects/') !== false) {
+            $imagePath = '../' . $projectToDelete['image_url'];
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+        
         $success = 'Project deleted successfully';
     } catch (Exception $e) {
         $error = 'Failed to delete project';
@@ -67,7 +83,16 @@ try {
                     <?php foreach ($projects as $project): ?>
                     <tr class="hover:bg-gray-800/30 transition-colors">
                         <td class="px-6 py-4">
-                            <img src="<?= htmlspecialchars($project['image_url']) ?>" 
+                            <?php 
+                            $imgUrl = $project['image_url'];
+                            if (!empty($imgUrl)) {
+                                // Check if it's a local file or external URL
+                                $imgSrc = (strpos($imgUrl, 'http') === 0) ? $imgUrl : '../' . $imgUrl;
+                            } else {
+                                $imgSrc = 'https://via.placeholder.com/160x120?text=No+Image';
+                            }
+                            ?>
+                            <img src="<?= htmlspecialchars($imgSrc) ?>" 
                                  alt="<?= htmlspecialchars($project['title']) ?>"
                                  class="w-16 h-12 object-cover rounded-lg">
                         </td>

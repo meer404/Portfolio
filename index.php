@@ -383,7 +383,16 @@ try {
                     <div class="animate-on-scroll group">
                         <div class="glass-card rounded-2xl overflow-hidden hover:scale-[1.02] transition-all duration-300">
                             <div class="relative h-48 overflow-hidden">
-                                <img src="<?= htmlspecialchars($project['image_url']) ?>" 
+                                <?php 
+                                $imgUrl = $project['image_url'];
+                                if (!empty($imgUrl)) {
+                                    // Check if it's a local file or external URL
+                                    $imgSrc = (strpos($imgUrl, 'http') === 0) ? $imgUrl : $imgUrl;
+                                } else {
+                                    $imgSrc = 'https://via.placeholder.com/600x400?text=No+Image';
+                                }
+                                ?>
+                                <img src="<?= htmlspecialchars($imgSrc) ?>" 
                                      alt="<?= htmlspecialchars($project['title']) ?>"
                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
