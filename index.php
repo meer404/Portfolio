@@ -436,26 +436,43 @@ try {
                 <?php if (!empty($blogs)): ?>
                     <?php foreach ($blogs as $blog): ?>
                     <div class="animate-on-scroll">
-                        <article class="glass-card rounded-2xl p-6 hover:scale-[1.02] transition-all duration-300">
-                            <div class="flex items-center gap-2 text-purple-600 dark:text-purple-400 text-sm mb-3">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                <?= date('M d, Y', strtotime($blog['created_at'])) ?>
-                            </div>
-                            <h3 class="text-xl font-bold mb-3 hover:text-purple-600 dark:hover:text-purple-400 transition-colors cursor-pointer">
-                                <?= htmlspecialchars($blog['title']) ?>
-                            </h3>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-3">
-                                <?= htmlspecialchars(substr($blog['content'], 0, 150)) ?>...
-                            </p>
-                            <a href="#" class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium mt-4 hover:gap-3 transition-all">
-                                Read More
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                                </svg>
-                            </a>
-                        </article>
+                        <a href="blog.php?id=<?= $blog['id'] ?>" class="block group">
+                            <article class="glass-card rounded-2xl overflow-hidden hover:scale-[1.02] transition-all duration-300">
+                                <?php if (!empty($blog['image_url'])): ?>
+                                <div class="h-48 overflow-hidden">
+                                    <img src="<?= htmlspecialchars($blog['image_url']) ?>" 
+                                         alt="<?= htmlspecialchars($blog['title']) ?>"
+                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                </div>
+                                <?php else: ?>
+                                <div class="h-48 bg-gradient-to-br from-purple-600/20 to-pink-600/20 flex items-center justify-center">
+                                    <svg class="w-16 h-16 text-purple-500/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                                    </svg>
+                                </div>
+                                <?php endif; ?>
+                                <div class="p-6">
+                                    <div class="flex items-center gap-2 text-purple-600 dark:text-purple-400 text-sm mb-3">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <?= date('M d, Y', strtotime($blog['created_at'])) ?>
+                                    </div>
+                                    <h3 class="text-xl font-bold mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                                        <?= htmlspecialchars($blog['title']) ?>
+                                    </h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-3">
+                                        <?= htmlspecialchars(substr($blog['content'], 0, 150)) ?>...
+                                    </p>
+                                    <span class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium mt-4 group-hover:gap-3 transition-all">
+                                        Read More
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </article>
+                        </a>
                     </div>
                     <?php endforeach; ?>
                 <?php else: ?>
