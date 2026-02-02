@@ -4,6 +4,7 @@
  * Displays individual blog post with full content
  */
 
+require_once 'lang.php';
 require_once 'db.php';
 
 // Check if ID is provided
@@ -39,7 +40,7 @@ try {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="<?= getCurrentLanguage() ?>" dir="<?= getDir() ?>" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,7 +74,12 @@ try {
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php if (isRTL()): ?>
+    <style>
+        body { font-family: 'Noto Sans Arabic', 'Inter', system-ui, sans-serif; }
+    </style>
+    <?php endif; ?>
     
     <style>
         .gradient-text {
@@ -109,11 +115,12 @@ try {
                 
                 <!-- Navigation Links -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="index.php#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Home</a>
-                    <a href="index.php#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">About</a>
-                    <a href="index.php#portfolio" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Portfolio</a>
-                    <a href="index.php#blog" class="text-purple-600 dark:text-purple-400 font-medium">Blog</a>
-                    <a href="index.php#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Contact</a>
+                    <a href="index.php#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.home') ?></a>
+                    <a href="index.php#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.about') ?></a>
+                    <a href="index.php#portfolio" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.portfolio') ?></a>
+                    <a href="index.php#blog" class="text-purple-600 dark:text-purple-400 font-medium"><?= t('nav.blog') ?></a>
+                    <a href="index.php#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.contact') ?></a>
+                    <a href="<?= langUrl(getOtherLanguage()) ?>" class="px-3 py-1 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors"><?= t('language.switch') ?></a>
                     
                     <!-- Theme Toggle -->
                     <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
@@ -152,7 +159,7 @@ try {
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
-                Back to Blog
+                <?= t('blog.back_to_blog') ?>
             </a>
             
             <!-- Post Header -->
@@ -184,7 +191,7 @@ try {
             
             <!-- Share Section -->
             <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Share this post</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4"><?= t('blog.share_post') ?></p>
                 <div class="flex gap-3">
                     <a href="https://twitter.com/intent/tweet?url=<?= urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) ?>&text=<?= urlencode($blog['title']) ?>" 
                        target="_blank"
@@ -210,7 +217,7 @@ try {
     <?php if (!empty($relatedPosts)): ?>
     <section class="py-16 bg-white dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl font-bold mb-8">More Posts</h2>
+            <h2 class="text-2xl font-bold mb-8"><?= t('blog.more_posts') ?></h2>
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 <?php foreach ($relatedPosts as $post): ?>
                 <a href="blog.php?id=<?= $post['id'] ?>" class="group">
@@ -254,12 +261,12 @@ try {
                 <div class="text-center md:text-left">
                     <a href="index.php" class="text-2xl font-bold gradient-text">JD</a>
                     <p class="text-gray-600 dark:text-gray-400 mt-2 text-sm">
-                        Building digital experiences that matter.
+                        <?= t('footer.tagline') ?>
                     </p>
                 </div>
                 
                 <div class="text-center md:text-right text-gray-600 dark:text-gray-400 text-sm">
-                    <p>&copy; <?= date('Y') ?> John Doe. All rights reserved.</p>
+                    <p>&copy; <?= date('Y') ?>. <?= t('footer.rights') ?></p>
                 </div>
             </div>
         </div>

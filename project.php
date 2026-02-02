@@ -4,6 +4,7 @@
  * Displays individual project with full details
  */
 
+require_once 'lang.php';
 require_once 'db.php';
 
 // Check if ID is provided
@@ -36,7 +37,7 @@ try {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="<?= getCurrentLanguage() ?>" dir="<?= getDir() ?>" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,7 +71,12 @@ try {
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php if (isRTL()): ?>
+    <style>
+        body { font-family: 'Noto Sans Arabic', 'Inter', system-ui, sans-serif; }
+    </style>
+    <?php endif; ?>
     
     <style>
         .gradient-text {
@@ -106,11 +112,12 @@ try {
                 
                 <!-- Navigation Links -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="index.php#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Home</a>
-                    <a href="index.php#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">About</a>
-                    <a href="index.php#portfolio" class="text-purple-600 dark:text-purple-400 font-medium">Portfolio</a>
-                    <a href="index.php#blog" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Blog</a>
-                    <a href="index.php#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Contact</a>
+                    <a href="index.php#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.home') ?></a>
+                    <a href="index.php#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.about') ?></a>
+                    <a href="index.php#portfolio" class="text-purple-600 dark:text-purple-400 font-medium"><?= t('nav.portfolio') ?></a>
+                    <a href="index.php#blog" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.blog') ?></a>
+                    <a href="index.php#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.contact') ?></a>
+                    <a href="<?= langUrl(getOtherLanguage()) ?>" class="px-3 py-1 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors"><?= t('language.switch') ?></a>
                     
                     <!-- Theme Toggle -->
                     <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
@@ -149,7 +156,7 @@ try {
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
-                Back to Projects
+                <?= t('portfolio.back_to_projects') ?>
             </a>
             
             <!-- Project Header -->
@@ -191,14 +198,14 @@ try {
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                     </svg>
-                    View Live Project
+                    <?= t('portfolio.view_live') ?>
                 </a>
             </div>
             <?php endif; ?>
             
             <!-- Share Section -->
             <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Share this project</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4"><?= t('portfolio.share_project') ?></p>
                 <div class="flex gap-3">
                     <a href="https://twitter.com/intent/tweet?url=<?= urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) ?>&text=<?= urlencode($project['title']) ?>" 
                        target="_blank"
@@ -224,7 +231,7 @@ try {
     <?php if (!empty($relatedProjects)): ?>
     <section class="py-16 bg-white dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl font-bold mb-8">More Projects</h2>
+            <h2 class="text-2xl font-bold mb-8"><?= t('portfolio.more_projects') ?></h2>
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 <?php foreach ($relatedProjects as $related): ?>
                 <a href="project.php?id=<?= $related['id'] ?>" class="group">
@@ -268,12 +275,12 @@ try {
                 <div class="text-center md:text-left">
                     <a href="index.php" class="text-2xl font-bold gradient-text">JD</a>
                     <p class="text-gray-600 dark:text-gray-400 mt-2 text-sm">
-                        Building digital experiences that matter.
+                        <?= t('footer.tagline') ?>
                     </p>
                 </div>
                 
                 <div class="text-center md:text-right text-gray-600 dark:text-gray-400 text-sm">
-                    <p>&copy; <?= date('Y') ?> John Doe. All rights reserved.</p>
+                    <p>&copy; <?= date('Y') ?>. <?= t('footer.rights') ?></p>
                 </div>
             </div>
         </div>

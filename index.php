@@ -4,6 +4,7 @@
  * A modern, responsive personal portfolio
  */
 
+require_once 'lang.php';
 require_once 'db.php';
 
 // Fetch data from database (limited for homepage)
@@ -33,7 +34,7 @@ function getSetting($key, $default = '') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="<?= getCurrentLanguage() ?>" dir="<?= getDir() ?>" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,7 +74,12 @@ function getSetting($key, $default = '') {
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php if (isRTL()): ?>
+    <style>
+        body { font-family: 'Noto Sans Arabic', 'Inter', system-ui, sans-serif; }
+    </style>
+    <?php endif; ?>
     
     <style>
         .gradient-text {
@@ -121,13 +127,18 @@ function getSetting($key, $default = '') {
                 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Home</a>
-                    <a href="#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">About</a>
-                    <a href="#resume" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Resume</a>
-                    <a href="#clients" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Clients</a>
-                    <a href="#portfolio" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Portfolio</a>
-                    <a href="#blog" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Blog</a>
-                    <a href="#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Contact</a>
+                    <a href="#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.home') ?></a>
+                    <a href="#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.about') ?></a>
+                    <a href="#resume" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.resume') ?></a>
+                    <a href="#clients" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.clients') ?></a>
+                    <a href="#portfolio" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.portfolio') ?></a>
+                    <a href="#blog" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.blog') ?></a>
+                    <a href="#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.contact') ?></a>
+                    
+                    <!-- Language Switcher -->
+                    <a href="<?= langUrl(getOtherLanguage()) ?>" class="px-3 py-1 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors">
+                        <?= t('language.switch') ?>
+                    </a>
                     
                     <!-- Theme Toggle -->
                     <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
@@ -164,13 +175,14 @@ function getSetting($key, $default = '') {
             <!-- Mobile Menu -->
             <div id="mobile-menu" class="hidden md:hidden pb-4">
                 <div class="flex flex-col space-y-3">
-                    <a href="#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Home</a>
-                    <a href="#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">About</a>
-                    <a href="#resume" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Resume</a>
-                    <a href="#clients" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Clients</a>
-                    <a href="#portfolio" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Portfolio</a>
-                    <a href="#blog" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Blog</a>
-                    <a href="#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors">Contact</a>
+                    <a href="#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors"><?= t('nav.home') ?></a>
+                    <a href="#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors"><?= t('nav.about') ?></a>
+                    <a href="#resume" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors"><?= t('nav.resume') ?></a>
+                    <a href="#clients" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors"><?= t('nav.clients') ?></a>
+                    <a href="#portfolio" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors"><?= t('nav.portfolio') ?></a>
+                    <a href="#blog" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors"><?= t('nav.blog') ?></a>
+                    <a href="#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 py-2 transition-colors"><?= t('nav.contact') ?></a>
+                    <a href="<?= langUrl(getOtherLanguage()) ?>" class="text-purple-600 dark:text-purple-400 font-medium py-2"><?= t('language.switch') ?></a>
                 </div>
             </div>
         </div>
@@ -193,10 +205,10 @@ function getSetting($key, $default = '') {
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start animate-fade-in" style="animation-delay: 0.4s;">
                         <a href="#contact" class="gradient-bg text-white px-8 py-4 rounded-full font-semibold hover:opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg shadow-purple-500/25">
-                            Get In Touch
+                            <?= t('hero.get_in_touch') ?>
                         </a>
                         <a href="#portfolio" class="border-2 border-purple-600 text-purple-600 dark:text-purple-400 px-8 py-4 rounded-full font-semibold hover:bg-purple-600 hover:text-white transition-all duration-300">
-                            View My Work
+                            <?= t('hero.view_my_work') ?>
                         </a>
                     </div>
                 </div>
@@ -225,7 +237,7 @@ function getSetting($key, $default = '') {
     <section id="about" class="py-20 bg-white dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-on-scroll">
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">About <span class="gradient-text">Me</span></h2>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4"><?= t('about.title') ?> <span class="gradient-text"><?= t('about.me') ?></span></h2>
                 <div class="w-20 h-1 gradient-bg mx-auto rounded-full"></div>
             </div>
             
@@ -255,7 +267,7 @@ function getSetting($key, $default = '') {
                 </div>
                 
                 <div class="animate-on-scroll">
-                    <h3 class="text-2xl font-bold mb-6">My Skills</h3>
+                    <h3 class="text-2xl font-bold mb-6"><?= t('about.my_skills') ?></h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         <?php
                         $skills = [
@@ -286,7 +298,7 @@ function getSetting($key, $default = '') {
     <section id="resume" class="py-20 bg-gray-50 dark:bg-gray-950">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-on-scroll">
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">My <span class="gradient-text">Resume</span></h2>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4"><?= t('resume.title') ?> <span class="gradient-text"><?= t('resume.highlight') ?></span></h2>
                 <div class="w-20 h-1 gradient-bg mx-auto rounded-full"></div>
             </div>
             
@@ -299,7 +311,7 @@ function getSetting($key, $default = '') {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
                         </span>
-                        Work Experience
+                        <?= t('resume.work_experience') ?>
                     </h3>
                     <div class="space-y-8">
                         <?php foreach ($experience as $exp): ?>
@@ -314,7 +326,7 @@ function getSetting($key, $default = '') {
                         </div>
                         <?php endforeach; ?>
                         <?php if (empty($experience)): ?>
-                        <p class="text-gray-500">No experience entries yet.</p>
+                        <p class="text-gray-500"><?= t('resume.no_experience') ?></p>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -329,7 +341,7 @@ function getSetting($key, $default = '') {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
                             </svg>
                         </span>
-                        Education
+                        <?= t('resume.education') ?>
                     </h3>
                     <div class="space-y-8">
                         <?php foreach ($education as $edu): ?>
@@ -344,7 +356,7 @@ function getSetting($key, $default = '') {
                         </div>
                         <?php endforeach; ?>
                         <?php if (empty($education)): ?>
-                        <p class="text-gray-500">No education entries yet.</p>
+                        <p class="text-gray-500"><?= t('resume.no_education') ?></p>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -357,7 +369,7 @@ function getSetting($key, $default = '') {
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    Download Resume
+                    <?= t('resume.download') ?>
                 </a>
             </div>
         </div>
@@ -367,10 +379,10 @@ function getSetting($key, $default = '') {
     <section id="clients" class="py-20 bg-white dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-on-scroll">
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Trusted by <span class="gradient-text">Clients</span></h2>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4"><?= t('clients.trusted_by') ?> <span class="gradient-text"><?= t('clients.highlight') ?></span></h2>
                 <div class="w-20 h-1 gradient-bg mx-auto rounded-full"></div>
                 <p class="text-gray-600 dark:text-gray-400 mt-4 max-w-2xl mx-auto">
-                    Proud to have worked with these amazing companies and individuals.
+                    <?= t('clients.description') ?>
                 </p>
             </div>
             
@@ -402,7 +414,7 @@ function getSetting($key, $default = '') {
                         <svg class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                         </svg>
-                        <p>No clients yet. Add some clients to the database!</p>
+                        <p><?= t('clients.no_clients') ?></p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -413,13 +425,13 @@ function getSetting($key, $default = '') {
     <section id="portfolio" class="py-20 bg-white dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-on-scroll">
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">My <span class="gradient-text">Portfolio</span></h2>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4"><?= t('portfolio.my') ?> <span class="gradient-text"><?= t('portfolio.highlight') ?></span></h2>
                 <div class="w-20 h-1 gradient-bg mx-auto rounded-full"></div>
                 <p class="text-gray-600 dark:text-gray-400 mt-4 max-w-2xl mx-auto">
-                    Check out some of my recent projects that showcase my skills and expertise.
+                    <?= t('portfolio.description') ?>
                 </p>
                 <a href="projects.php" class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium mt-4 hover:gap-3 transition-all">
-                    View All Projects
+                    <?= t('portfolio.view_all') ?>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>
@@ -463,7 +475,7 @@ function getSetting($key, $default = '') {
                     <?php endforeach; ?>
                 <?php else: ?>
                     <div class="col-span-full text-center py-12 text-gray-500 dark:text-gray-400">
-                        <p>No projects found. Add some projects to the database!</p>
+                        <p><?= t('portfolio.no_projects') ?></p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -474,13 +486,13 @@ function getSetting($key, $default = '') {
     <section id="blog" class="py-20 bg-gray-50 dark:bg-gray-950">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-on-scroll">
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Latest <span class="gradient-text">Blog Posts</span></h2>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4"><?= t('blog.latest') ?> <span class="gradient-text"><?= t('blog.highlight') ?></span></h2>
                 <div class="w-20 h-1 gradient-bg mx-auto rounded-full"></div>
                 <p class="text-gray-600 dark:text-gray-400 mt-4 max-w-2xl mx-auto">
-                    Thoughts, tutorials, and insights on web development and technology.
+                    <?= t('blog.description') ?>
                 </p>
                 <a href="blogs.php" class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium mt-4 hover:gap-3 transition-all">
-                    View All Posts
+                    <?= t('blog.view_all') ?>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>
@@ -520,7 +532,7 @@ function getSetting($key, $default = '') {
                                         <?= htmlspecialchars(substr($blog['content'], 0, 150)) ?>...
                                     </p>
                                     <span class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium mt-4 group-hover:gap-3 transition-all">
-                                        Read More
+                                        <?= t('blog.read_more') ?>
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                                         </svg>
@@ -532,7 +544,7 @@ function getSetting($key, $default = '') {
                     <?php endforeach; ?>
                 <?php else: ?>
                     <div class="col-span-full text-center py-12 text-gray-500 dark:text-gray-400">
-                        <p>No blog posts found. Add some posts to the database!</p>
+                        <p><?= t('blog.no_posts') ?></p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -543,19 +555,19 @@ function getSetting($key, $default = '') {
     <section id="contact" class="py-20 bg-white dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-on-scroll">
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Get In <span class="gradient-text">Touch</span></h2>
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4"><?= t('contact.get_in') ?> <span class="gradient-text"><?= t('contact.highlight') ?></span></h2>
                 <div class="w-20 h-1 gradient-bg mx-auto rounded-full"></div>
                 <p class="text-gray-600 dark:text-gray-400 mt-4 max-w-2xl mx-auto">
-                    Have a project in mind? Let's work together to create something amazing.
+                    <?= t('contact.description') ?>
                 </p>
             </div>
             
             <div class="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
                 <!-- Contact Info -->
                 <div class="animate-on-scroll">
-                    <h3 class="text-2xl font-bold mb-6">Let's Talk</h3>
+                    <h3 class="text-2xl font-bold mb-6"><?= t('contact.lets_talk') ?></h3>
                     <p class="text-gray-600 dark:text-gray-400 mb-8">
-                        I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
+                        <?= t('contact.talk_description') ?>
                     </p>
                     
                     <div class="space-y-6">
@@ -566,7 +578,7 @@ function getSetting($key, $default = '') {
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Email</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400"><?= t('contact.email') ?></p>
                                 <a href="mailto:<?= htmlspecialchars(getSetting('contact_email', 'hello@johndoe.com')) ?>" class="font-medium hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= htmlspecialchars(getSetting('contact_email', 'hello@johndoe.com')) ?></a>
                             </div>
                         </div>
@@ -579,7 +591,7 @@ function getSetting($key, $default = '') {
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Location</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400"><?= t('contact.location') ?></p>
                                 <p class="font-medium"><?= htmlspecialchars(getSetting('contact_location', 'San Francisco, CA')) ?></p>
                             </div>
                         </div>
@@ -591,7 +603,7 @@ function getSetting($key, $default = '') {
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Phone</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400"><?= t('contact.phone') ?></p>
                                 <a href="tel:<?= htmlspecialchars(preg_replace('/[^0-9+]/', '', getSetting('contact_phone', '+1234567890'))) ?>" class="font-medium hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= htmlspecialchars(getSetting('contact_phone', '+1 (234) 567-890')) ?></a>
                             </div>
                         </div>
@@ -599,7 +611,7 @@ function getSetting($key, $default = '') {
                     
                     <!-- Social Links -->
                     <div class="mt-10">
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Follow me on</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4"><?= t('contact.follow_me') ?></p>
                         <div class="flex gap-4">
                             <a href="<?= htmlspecialchars(getSetting('social_github', '#')) ?>" target="_blank" class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-purple-600 hover:text-white transition-all duration-300">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
@@ -619,36 +631,36 @@ function getSetting($key, $default = '') {
                     <form id="contact-form" class="glass-card rounded-2xl p-8">
                         <div class="grid sm:grid-cols-2 gap-6 mb-6">
                             <div>
-                                <label for="name" class="block text-sm font-medium mb-2">Your Name</label>
+                                <label for="name" class="block text-sm font-medium mb-2"><?= t('contact.your_name') ?></label>
                                 <input type="text" id="name" name="name" required
                                        class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
-                                       placeholder="John Doe">
+                                       placeholder="<?= t('contact.name_placeholder') ?>">
                             </div>
                             <div>
-                                <label for="email" class="block text-sm font-medium mb-2">Your Email</label>
+                                <label for="email" class="block text-sm font-medium mb-2"><?= t('contact.your_email') ?></label>
                                 <input type="email" id="email" name="email" required
                                        class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
-                                       placeholder="john@example.com">
+                                       placeholder="<?= t('contact.email_placeholder') ?>">
                             </div>
                         </div>
                         
                         <div class="mb-6">
-                            <label for="subject" class="block text-sm font-medium mb-2">Subject</label>
+                            <label for="subject" class="block text-sm font-medium mb-2"><?= t('contact.subject') ?></label>
                             <input type="text" id="subject" name="subject" required
                                    class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
-                                   placeholder="Project Inquiry">
+                                   placeholder="<?= t('contact.subject_placeholder') ?>">
                         </div>
                         
                         <div class="mb-6">
-                            <label for="message" class="block text-sm font-medium mb-2">Message</label>
+                            <label for="message" class="block text-sm font-medium mb-2"><?= t('contact.message') ?></label>
                             <textarea id="message" name="message" rows="5" required
                                       class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all resize-none"
-                                      placeholder="Tell me about your project..."></textarea>
+                                      placeholder="<?= t('contact.message_placeholder') ?>"></textarea>
                         </div>
                         
                         <button type="submit" id="submit-btn"
                                 class="w-full gradient-bg text-white py-4 rounded-xl font-semibold hover:opacity-90 transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2">
-                            <span id="btn-text">Send Message</span>
+                                <span id="btn-text"><?= t('contact.send_message') ?></span>
                             <svg id="btn-loader" class="w-5 h-5 animate-spin hidden" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -669,7 +681,7 @@ function getSetting($key, $default = '') {
                 <div class="text-center md:text-left">
                     <a href="#" class="text-2xl font-bold gradient-text">JD</a>
                     <p class="text-gray-600 dark:text-gray-400 mt-2 text-sm">
-                        Building digital experiences that matter.
+                        <?= t('footer.tagline') ?>
                     </p>
                 </div>
                 
@@ -689,7 +701,7 @@ function getSetting($key, $default = '') {
                 </div>
                 
                 <div class="text-center md:text-right text-gray-600 dark:text-gray-400 text-sm">
-                    <p>&copy; <?= date('Y') ?> John Doe. All rights reserved.</p>
+                    <p>&copy; <?= date('Y') ?> <?= htmlspecialchars(getSetting('hero_name', 'John Doe')) ?>. <?= t('footer.rights') ?></p>
                 </div>
             </div>
         </div>

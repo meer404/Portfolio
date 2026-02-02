@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+require_once 'lang.php';
 require_once 'db.php';
 
 // Get and sanitize input
@@ -25,25 +26,25 @@ $message = isset($_POST['message']) ? trim(htmlspecialchars($_POST['message'], E
 $errors = [];
 
 if (empty($name)) {
-    $errors[] = 'Name is required';
+    $errors[] = t('form.name_required');
 } elseif (strlen($name) < 2) {
-    $errors[] = 'Name must be at least 2 characters';
+    $errors[] = t('form.name_min');
 }
 
 if (empty($email)) {
-    $errors[] = 'Email is required';
+    $errors[] = t('form.email_required');
 } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = 'Please enter a valid email address';
+    $errors[] = t('form.email_invalid');
 }
 
 if (empty($subject)) {
-    $errors[] = 'Subject is required';
+    $errors[] = t('form.subject_required');
 }
 
 if (empty($message)) {
-    $errors[] = 'Message is required';
+    $errors[] = t('form.message_required');
 } elseif (strlen($message) < 10) {
-    $errors[] = 'Message must be at least 10 characters';
+    $errors[] = t('form.message_min');
 }
 
 // Return errors if validation failed
@@ -61,13 +62,13 @@ try {
     if ($result) {
         echo json_encode([
             'success' => true, 
-            'message' => 'Thank you for your message! I will get back to you soon.'
+            'message' => t('form.success')
         ]);
     } else {
         http_response_code(500);
         echo json_encode([
             'success' => false, 
-            'message' => 'Failed to save message. Please try again.'
+            'message' => t('form.error')
         ]);
     }
 } catch (Exception $e) {
@@ -75,6 +76,6 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false, 
-        'message' => 'An error occurred. Please try again later.'
+        'message' => t('form.generic_error')
     ]);
 }

@@ -4,6 +4,7 @@
  * Displays all blog posts
  */
 
+require_once 'lang.php';
 require_once 'db.php';
 
 // Fetch all blogs from database
@@ -15,7 +16,7 @@ try {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="<?= getCurrentLanguage() ?>" dir="<?= getDir() ?>" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,7 +50,12 @@ try {
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php if (isRTL()): ?>
+    <style>
+        body { font-family: 'Noto Sans Arabic', 'Inter', system-ui, sans-serif; }
+    </style>
+    <?php endif; ?>
     
     <style>
         .gradient-text {
@@ -79,11 +85,12 @@ try {
                 
                 <!-- Navigation Links -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="index.php#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Home</a>
-                    <a href="index.php#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">About</a>
-                    <a href="index.php#portfolio" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Portfolio</a>
-                    <a href="index.php#blog" class="text-purple-600 dark:text-purple-400 font-medium">Blog</a>
-                    <a href="index.php#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Contact</a>
+                    <a href="index.php#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.home') ?></a>
+                    <a href="index.php#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.about') ?></a>
+                    <a href="index.php#portfolio" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.portfolio') ?></a>
+                    <a href="index.php#blog" class="text-purple-600 dark:text-purple-400 font-medium"><?= t('nav.blog') ?></a>
+                    <a href="index.php#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.contact') ?></a>
+                    <a href="<?= langUrl(getOtherLanguage()) ?>" class="px-3 py-1 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors"><?= t('language.switch') ?></a>
                     
                     <!-- Theme Toggle -->
                     <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
@@ -122,15 +129,15 @@ try {
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
-                Back to Home
+                <?= t('blog.back_to_home') ?>
             </a>
             
             <!-- Header -->
             <div class="text-center mb-16 animate-fade-in">
-                <h1 class="text-3xl sm:text-4xl font-bold mb-4">All <span class="gradient-text">Blog Posts</span></h1>
+                <h1 class="text-3xl sm:text-4xl font-bold mb-4"><?= t('blog.all_posts') ?> <span class="gradient-text"><?= t('blog.all_posts_highlight') ?></span></h1>
                 <div class="w-20 h-1 gradient-bg mx-auto rounded-full"></div>
                 <p class="text-gray-600 dark:text-gray-400 mt-4 max-w-2xl mx-auto">
-                    Thoughts, tutorials, and insights on web development and technology.
+                    <?= t('blog.description') ?>
                 </p>
             </div>
             
@@ -168,7 +175,7 @@ try {
                                         <?= htmlspecialchars(substr($blog['content'], 0, 150)) ?>...
                                     </p>
                                     <span class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium mt-4 group-hover:gap-3 transition-all">
-                                        Read More
+                                        <?= t('blog.read_more') ?>
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                                         </svg>
@@ -183,7 +190,7 @@ try {
                         <svg class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
                         </svg>
-                        <p>No blog posts found. Add some posts to the database!</p>
+                        <p><?= t('blog.no_posts') ?></p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -197,12 +204,12 @@ try {
                 <div class="text-center md:text-left">
                     <a href="index.php" class="text-2xl font-bold gradient-text">JD</a>
                     <p class="text-gray-600 dark:text-gray-400 mt-2 text-sm">
-                        Building digital experiences that matter.
+                        <?= t('footer.tagline') ?>
                     </p>
                 </div>
                 
                 <div class="text-center md:text-right text-gray-600 dark:text-gray-400 text-sm">
-                    <p>&copy; <?= date('Y') ?> John Doe. All rights reserved.</p>
+                    <p>&copy; <?= date('Y') ?>. <?= t('footer.rights') ?></p>
                 </div>
             </div>
         </div>
