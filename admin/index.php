@@ -7,18 +7,64 @@ require_once 'includes/header.php';
 require_once 'includes/sidebar.php';
 
 // Get statistics
+$projectCount = 0;
+$blogCount = 0;
+$messageCount = 0;
+$unreadCount = 0;
+$recentMessages = [];
+$dbError = null;
+
 try {
     $db = Database::getInstance()->getConnection();
-    $projectCount = $db->query("SELECT COUNT(*) FROM projects")->fetchColumn();
-    $blogCount = $db->query("SELECT COUNT(*) FROM blogs")->fetchColumn();
-    $messageCount = $db->query("SELECT COUNT(*) FROM messages")->fetchColumn();
-    $unreadCount = $db->query("SELECT COUNT(*) FROM messages WHERE is_read = 0")->fetchColumn();
-    $recentMessages = $db->query("SELECT * FROM messages ORDER BY sent_at DESC LIMIT 5")->fetchAll();
+    
+    // Get project count
+    $stmt = $db->query("SELECT COUNT(*) FROM projects");
+    if ($stmt) {
+        $projectCount = (int) $stmt->fetchColumn();
+    }
+    
+    // Get blog count
+    $stmt = $db->query("SELECT COUNT(*) FROM blogs");
+    if ($stmt) {
+        $blogCount = (int) $stmt->fetchColumn();
+    }
+    
+    // Get message counts
+    $stmt = $db->query("SELECT COUNT(*) FROM messages");
+    if ($stmt) {
+        $messageCount = (int) $stmt->fetchColumn();
+    }
+    
+    $stmt = $db->query("SELECT COUNT(*) FROM messages WHERE is_read = 0");
+    if ($stmt) {
+        $unreadCount = (int) $stmt->fetchColumn();
+    }
+    
+    // Get recent messages
+    $stmt = $db->query("SELECT * FROM messages ORDER BY sent_at DESC LIMIT 5");
+    if ($stmt) {
+        $recentMessages = $stmt->fetchAll();
+    }
 } catch (Exception $e) {
-    $projectCount = $blogCount = $messageCount = $unreadCount = 0;
-    $recentMessages = [];
+    $dbError = $e->getMessage();
+    error_log("Dashboard DB Error: " . $e->getMessage());
 }
 ?>
+
+<?php if ($dbError): ?>
+<!-- Database Error Alert -->
+<div class="bg-red-500/20 border border-red-500 rounded-xl p-4 mb-6">
+    <div class="flex items-center gap-3">
+        <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div>
+            <p class="text-red-400 font-medium">Database Error</p>
+            <p class="text-red-300 text-sm"><?= htmlspecialchars($dbError) ?></p>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- Stats Cards -->
 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
