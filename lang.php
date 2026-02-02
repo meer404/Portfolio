@@ -140,3 +140,22 @@ function getLocalizedField($item, $field) {
     }
     return $item[$field] ?? '';
 }
+
+/**
+ * Get localized site setting value based on current language
+ * Falls back to English if Kurdish translation is empty
+ */
+function getLocalizedSetting($key, $default = '') {
+    $db = Database::getInstance();
+    $lang = getCurrentLanguage();
+    
+    if ($lang === 'ku') {
+        $kuValue = $db->getSetting($key . '_ku');
+        if (!empty($kuValue)) {
+            return $kuValue;
+        }
+    }
+    
+    $value = $db->getSetting($key);
+    return $value !== null ? $value : $default;
+}

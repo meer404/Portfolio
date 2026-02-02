@@ -15,12 +15,16 @@ $messageType = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $settings = [];
     
-    // Hero Section
+    // Hero Section - English
     if (isset($_POST['hero_greeting'])) {
         $settings['hero_greeting'] = $_POST['hero_greeting'];
         $settings['hero_name'] = $_POST['hero_name'];
         $settings['hero_title'] = $_POST['hero_title'];
         $settings['hero_description'] = $_POST['hero_description'];
+        // Kurdish
+        $settings['hero_greeting_ku'] = $_POST['hero_greeting_ku'] ?? '';
+        $settings['hero_title_ku'] = $_POST['hero_title_ku'] ?? '';
+        $settings['hero_description_ku'] = $_POST['hero_description_ku'] ?? '';
     }
     
     // Handle hero image upload
@@ -36,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
-    // About Section
+    // About Section - English
     if (isset($_POST['about_title'])) {
         $settings['about_title'] = $_POST['about_title'];
         $settings['about_paragraph1'] = $_POST['about_paragraph1'];
@@ -44,6 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $settings['about_experience'] = $_POST['about_experience'];
         $settings['about_projects'] = $_POST['about_projects'];
         $settings['about_clients'] = $_POST['about_clients'];
+        // Kurdish
+        $settings['about_title_ku'] = $_POST['about_title_ku'] ?? '';
+        $settings['about_paragraph1_ku'] = $_POST['about_paragraph1_ku'] ?? '';
+        $settings['about_paragraph2_ku'] = $_POST['about_paragraph2_ku'] ?? '';
+        $settings['about_experience_ku'] = $_POST['about_experience_ku'] ?? '';
+        $settings['about_projects_ku'] = $_POST['about_projects_ku'] ?? '';
+        $settings['about_clients_ku'] = $_POST['about_clients_ku'] ?? '';
     }
     
     // Resume Section - Experience (JSON)
@@ -136,35 +147,81 @@ $activeTab = $_GET['tab'] ?? 'hero';
 
 <!-- Hero Section Tab -->
 <?php if ($activeTab === 'hero'): ?>
+<style>
+.lang-tabs { display: flex; gap: 0; margin-bottom: 1.5rem; }
+.lang-tab { padding: 0.75rem 1.5rem; background: #1f2937; border: 1px solid #374151; cursor: pointer; font-weight: 500; transition: all 0.2s; color: #9ca3af; }
+.lang-tab:first-child { border-radius: 0.75rem 0 0 0.75rem; }
+.lang-tab:last-child { border-radius: 0 0.75rem 0.75rem 0; }
+.lang-tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: #667eea; color: white; }
+.lang-tab:not(.active):hover { background: #374151; }
+.lang-content { display: none; }
+.lang-content.active { display: block; }
+</style>
+
 <form method="POST" enctype="multipart/form-data" class="bg-gray-900 rounded-2xl border border-gray-800 p-6">
     <h2 class="text-xl font-bold mb-6">Hero Section</h2>
     
-    <div class="grid md:grid-cols-2 gap-6 mb-6">
-        <div>
-            <label class="block text-sm font-medium text-gray-400 mb-2">Greeting Text</label>
-            <input type="text" name="hero_greeting" value="<?= htmlspecialchars($settings['hero_greeting'] ?? "Hello, I'm") ?>"
+    <!-- Language Tabs -->
+    <div class="lang-tabs">
+        <div class="lang-tab active" onclick="switchLang('en', this)">🇬🇧 English</div>
+        <div class="lang-tab" onclick="switchLang('ku', this)">🇮🇶 کوردی</div>
+    </div>
+    
+    <!-- English Content -->
+    <div id="lang-en" class="lang-content active">
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Greeting Text</label>
+                <input type="text" name="hero_greeting" value="<?= htmlspecialchars($settings['hero_greeting'] ?? "Hello, I'm") ?>"
+                       class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Your Name</label>
+                <input type="text" name="hero_name" value="<?= htmlspecialchars($settings['hero_name'] ?? '') ?>"
+                       class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none">
+            </div>
+        </div>
+        
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">Professional Title</label>
+            <input type="text" name="hero_title" value="<?= htmlspecialchars($settings['hero_title'] ?? '') ?>"
                    class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none">
         </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-400 mb-2">Your Name</label>
-            <input type="text" name="hero_name" value="<?= htmlspecialchars($settings['hero_name'] ?? '') ?>"
-                   class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none">
+        
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">Hero Description</label>
+            <textarea name="hero_description" rows="3"
+                      class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none resize-none"><?= htmlspecialchars($settings['hero_description'] ?? '') ?></textarea>
         </div>
     </div>
     
-    <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-400 mb-2">Professional Title</label>
-        <input type="text" name="hero_title" value="<?= htmlspecialchars($settings['hero_title'] ?? '') ?>"
-               class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none">
+    <!-- Kurdish Content -->
+    <div id="lang-ku" class="lang-content" dir="rtl">
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">سڵاوکردن</label>
+            <input type="text" name="hero_greeting_ku" value="<?= htmlspecialchars($settings['hero_greeting_ku'] ?? '') ?>"
+                   class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none"
+                   style="font-family: 'Noto Sans Arabic', sans-serif;" placeholder="سڵاو، من">
+        </div>
+        
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">ناونیشانی پیشەیی</label>
+            <input type="text" name="hero_title_ku" value="<?= htmlspecialchars($settings['hero_title_ku'] ?? '') ?>"
+                   class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none"
+                   style="font-family: 'Noto Sans Arabic', sans-serif;" placeholder="گەشەپێدەری وێب">
+        </div>
+        
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">وەسفی سەرەکی</label>
+            <textarea name="hero_description_ku" rows="3"
+                      class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none resize-none"
+                      style="font-family: 'Noto Sans Arabic', sans-serif;"
+                      placeholder="وەسفێکی کورت دەربارەی خۆت..."><?= htmlspecialchars($settings['hero_description_ku'] ?? '') ?></textarea>
+        </div>
     </div>
     
-    <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-400 mb-2">Hero Description</label>
-        <textarea name="hero_description" rows="3"
-                  class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none resize-none"><?= htmlspecialchars($settings['hero_description'] ?? '') ?></textarea>
-    </div>
-    
-    <div class="mb-6">
+    <!-- Profile Image (shared) -->
+    <div class="mb-6" dir="ltr">
         <label class="block text-sm font-medium text-gray-400 mb-2">Profile Image</label>
         <?php if (!empty($settings['hero_image'])): ?>
         <div class="mb-3">
@@ -179,50 +236,128 @@ $activeTab = $_GET['tab'] ?? 'hero';
         Save Hero Settings
     </button>
 </form>
+
+<script>
+function switchLang(lang, element) {
+    document.querySelectorAll('.lang-tab').forEach(tab => tab.classList.remove('active'));
+    element.classList.add('active');
+    document.querySelectorAll('.lang-content').forEach(content => content.classList.remove('active'));
+    document.getElementById('lang-' + lang).classList.add('active');
+}
+</script>
 <?php endif; ?>
 
 <!-- About Me Tab -->
 <?php if ($activeTab === 'about'): ?>
+<style>
+.lang-tabs { display: flex; gap: 0; margin-bottom: 1.5rem; }
+.lang-tab { padding: 0.75rem 1.5rem; background: #1f2937; border: 1px solid #374151; cursor: pointer; font-weight: 500; transition: all 0.2s; color: #9ca3af; }
+.lang-tab:first-child { border-radius: 0.75rem 0 0 0.75rem; }
+.lang-tab:last-child { border-radius: 0 0.75rem 0.75rem 0; }
+.lang-tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: #667eea; color: white; }
+.lang-tab:not(.active):hover { background: #374151; }
+.lang-content { display: none; }
+.lang-content.active { display: block; }
+</style>
+
 <form method="POST" class="bg-gray-900 rounded-2xl border border-gray-800 p-6">
     <h2 class="text-xl font-bold mb-6">About Me Section</h2>
     
-    <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-400 mb-2">Section Title</label>
-        <input type="text" name="about_title" value="<?= htmlspecialchars($settings['about_title'] ?? '') ?>"
-               class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none">
+    <!-- Language Tabs -->
+    <div class="lang-tabs">
+        <div class="lang-tab active" onclick="switchLang('en', this)">🇬🇧 English</div>
+        <div class="lang-tab" onclick="switchLang('ku', this)">🇮🇶 کوردی</div>
     </div>
     
-    <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-400 mb-2">First Paragraph</label>
-        <textarea name="about_paragraph1" rows="4"
-                  class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none resize-none"><?= htmlspecialchars($settings['about_paragraph1'] ?? '') ?></textarea>
-    </div>
-    
-    <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-400 mb-2">Second Paragraph</label>
-        <textarea name="about_paragraph2" rows="4"
-                  class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none resize-none"><?= htmlspecialchars($settings['about_paragraph2'] ?? '') ?></textarea>
-    </div>
-    
-    <h3 class="text-lg font-bold mb-4">Statistics</h3>
-    <div class="grid md:grid-cols-3 gap-6 mb-6">
-        <div>
-            <label class="block text-sm font-medium text-gray-400 mb-2">Experience</label>
-            <input type="text" name="about_experience" value="<?= htmlspecialchars($settings['about_experience'] ?? '') ?>"
-                   class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none"
-                   placeholder="5+ Years Experience">
+    <!-- English Content -->
+    <div id="lang-en" class="lang-content active">
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">Section Title</label>
+            <input type="text" name="about_title" value="<?= htmlspecialchars($settings['about_title'] ?? '') ?>"
+                   class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none">
         </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-400 mb-2">Projects</label>
-            <input type="text" name="about_projects" value="<?= htmlspecialchars($settings['about_projects'] ?? '') ?>"
-                   class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none"
-                   placeholder="50+ Projects Completed">
+        
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">First Paragraph</label>
+            <textarea name="about_paragraph1" rows="4"
+                      class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none resize-none"><?= htmlspecialchars($settings['about_paragraph1'] ?? '') ?></textarea>
         </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-400 mb-2">Clients</label>
-            <input type="text" name="about_clients" value="<?= htmlspecialchars($settings['about_clients'] ?? '') ?>"
+        
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">Second Paragraph</label>
+            <textarea name="about_paragraph2" rows="4"
+                      class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none resize-none"><?= htmlspecialchars($settings['about_paragraph2'] ?? '') ?></textarea>
+        </div>
+        
+        <h3 class="text-lg font-bold mb-4">Statistics</h3>
+        <div class="grid md:grid-cols-3 gap-6 mb-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Experience</label>
+                <input type="text" name="about_experience" value="<?= htmlspecialchars($settings['about_experience'] ?? '') ?>"
+                       class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none"
+                       placeholder="5+ Years Experience">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Projects</label>
+                <input type="text" name="about_projects" value="<?= htmlspecialchars($settings['about_projects'] ?? '') ?>"
+                       class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none"
+                       placeholder="50+ Projects Completed">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Clients</label>
+                <input type="text" name="about_clients" value="<?= htmlspecialchars($settings['about_clients'] ?? '') ?>"
+                       class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none"
+                       placeholder="30+ Happy Clients">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Kurdish Content -->
+    <div id="lang-ku" class="lang-content" dir="rtl">
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">ناونیشانی بەش</label>
+            <input type="text" name="about_title_ku" value="<?= htmlspecialchars($settings['about_title_ku'] ?? '') ?>"
                    class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none"
-                   placeholder="30+ Happy Clients">
+                   style="font-family: 'Noto Sans Arabic', sans-serif;">
+        </div>
+        
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">پارەگرافی یەکەم</label>
+            <textarea name="about_paragraph1_ku" rows="4"
+                      class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none resize-none"
+                      style="font-family: 'Noto Sans Arabic', sans-serif;"><?= htmlspecialchars($settings['about_paragraph1_ku'] ?? '') ?></textarea>
+        </div>
+        
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-400 mb-2">پارەگرافی دووەم</label>
+            <textarea name="about_paragraph2_ku" rows="4"
+                      class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none resize-none"
+                      style="font-family: 'Noto Sans Arabic', sans-serif;"><?= htmlspecialchars($settings['about_paragraph2_ku'] ?? '') ?></textarea>
+        </div>
+        
+        <h3 class="text-lg font-bold mb-4">ئامارەکان</h3>
+        <div class="grid md:grid-cols-3 gap-6 mb-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">ئەزموون</label>
+                <input type="text" name="about_experience_ku" value="<?= htmlspecialchars($settings['about_experience_ku'] ?? '') ?>"
+                       class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none"
+                       style="font-family: 'Noto Sans Arabic', sans-serif;"
+                       placeholder="+٥ ساڵ ئەزموون">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">پڕۆژەکان</label>
+                <input type="text" name="about_projects_ku" value="<?= htmlspecialchars($settings['about_projects_ku'] ?? '') ?>"
+                       class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none"
+                       style="font-family: 'Noto Sans Arabic', sans-serif;"
+                       placeholder="+٥٠ پڕۆژە">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">کڕیارەکان</label>
+                <input type="text" name="about_clients_ku" value="<?= htmlspecialchars($settings['about_clients_ku'] ?? '') ?>"
+                       class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:border-purple-500 outline-none"
+                       style="font-family: 'Noto Sans Arabic', sans-serif;"
+                       placeholder="+٣٠ کڕیار">
+            </div>
         </div>
     </div>
     
@@ -230,6 +365,15 @@ $activeTab = $_GET['tab'] ?? 'hero';
         Save About Settings
     </button>
 </form>
+
+<script>
+function switchLang(lang, element) {
+    document.querySelectorAll('.lang-tab').forEach(tab => tab.classList.remove('active'));
+    element.classList.add('active');
+    document.querySelectorAll('.lang-content').forEach(content => content.classList.remove('active'));
+    document.getElementById('lang-' + lang).classList.add('active');
+}
+</script>
 <?php endif; ?>
 
 <!-- Resume Tab -->

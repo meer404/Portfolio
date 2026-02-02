@@ -193,15 +193,15 @@ function getSetting($key, $default = '') {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div class="order-2 md:order-1 text-center md:text-left">
-                    <p class="text-purple-600 dark:text-purple-400 font-medium mb-4 animate-fade-in"><?= htmlspecialchars(getSetting('hero_greeting', "Hello, I'm")) ?></p>
+                    <p class="text-purple-600 dark:text-purple-400 font-medium mb-4 animate-fade-in"><?= htmlspecialchars(getLocalizedSetting('hero_greeting', "Hello, I'm")) ?></p>
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 animate-slide-up">
                         <span class="gradient-text"><?= htmlspecialchars(getSetting('hero_name', 'John Doe')) ?></span>
                     </h1>
                     <h2 class="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 mb-8 animate-fade-in" style="animation-delay: 0.2s;">
-                        <?= htmlspecialchars(getSetting('hero_title', 'Full-Stack Web Developer')) ?>
+                        <?= htmlspecialchars(getLocalizedSetting('hero_title', 'Full-Stack Web Developer')) ?>
                     </h2>
                     <p class="text-gray-600 dark:text-gray-400 text-lg mb-10 max-w-lg mx-auto md:mx-0 animate-fade-in" style="animation-delay: 0.3s;">
-                        <?= htmlspecialchars(getSetting('hero_description', 'I craft beautiful, responsive, and user-friendly web applications that solve real-world problems and deliver exceptional user experiences.')) ?>
+                        <?= htmlspecialchars(getLocalizedSetting('hero_description', 'I craft beautiful, responsive, and user-friendly web applications that solve real-world problems and deliver exceptional user experiences.')) ?>
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start animate-fade-in" style="animation-delay: 0.4s;">
                         <a href="#contact" class="gradient-bg text-white px-8 py-4 rounded-full font-semibold hover:opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg shadow-purple-500/25">
@@ -243,25 +243,25 @@ function getSetting($key, $default = '') {
             
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <div class="animate-on-scroll">
-                    <h3 class="text-2xl font-bold mb-6"><?= htmlspecialchars(getSetting('about_title', 'A Passionate Developer & Problem Solver')) ?></h3>
+                    <h3 class="text-2xl font-bold mb-6"><?= htmlspecialchars(getLocalizedSetting('about_title', 'A Passionate Developer & Problem Solver')) ?></h3>
                     <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                        <?= htmlspecialchars(getSetting('about_paragraph1', 'With over 5 years of experience in web development, I specialize in creating modern, scalable, and user-centric applications. My journey started with a curiosity about how websites work, and it has evolved into a deep passion for crafting digital experiences.')) ?>
+                        <?= htmlspecialchars(getLocalizedSetting('about_paragraph1', 'With over 5 years of experience in web development, I specialize in creating modern, scalable, and user-centric applications. My journey started with a curiosity about how websites work, and it has evolved into a deep passion for crafting digital experiences.')) ?>
                     </p>
                     <p class="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-                        <?= htmlspecialchars(getSetting('about_paragraph2', "I believe in writing clean, maintainable code and staying up-to-date with the latest technologies. When I'm not coding, you'll find me exploring new frameworks, contributing to open-source projects, or sharing knowledge through my blog.")) ?>
+                        <?= htmlspecialchars(getLocalizedSetting('about_paragraph2', "I believe in writing clean, maintainable code and staying up-to-date with the latest technologies. When I'm not coding, you'll find me exploring new frameworks, contributing to open-source projects, or sharing knowledge through my blog.")) ?>
                     </p>
                     <div class="flex flex-wrap gap-4">
                         <div class="flex items-center gap-2">
                             <div class="w-3 h-3 rounded-full gradient-bg"></div>
-                            <span class="text-gray-600 dark:text-gray-400"><?= htmlspecialchars(getSetting('about_experience', '5+ Years Experience')) ?></span>
+                            <span class="text-gray-600 dark:text-gray-400"><?= htmlspecialchars(getLocalizedSetting('about_experience', '5+ Years Experience')) ?></span>
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-3 h-3 rounded-full gradient-bg"></div>
-                            <span class="text-gray-600 dark:text-gray-400"><?= htmlspecialchars(getSetting('about_projects', '50+ Projects Completed')) ?></span>
+                            <span class="text-gray-600 dark:text-gray-400"><?= htmlspecialchars(getLocalizedSetting('about_projects', '50+ Projects Completed')) ?></span>
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-3 h-3 rounded-full gradient-bg"></div>
-                            <span class="text-gray-600 dark:text-gray-400"><?= htmlspecialchars(getSetting('about_clients', '30+ Happy Clients')) ?></span>
+                            <span class="text-gray-600 dark:text-gray-400"><?= htmlspecialchars(getLocalizedSetting('about_clients', '30+ Happy Clients')) ?></span>
                         </div>
                     </div>
                 </div>
