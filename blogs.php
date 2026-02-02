@@ -21,7 +21,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Browse all blog posts with thoughts, tutorials, and insights on web development">
-    <title>All Blog Posts | Portfolio</title>
+    <title><?= t('page.all_blogs_title') ?></title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -151,7 +151,7 @@ try {
                                 <?php if (!empty($blog['image_url'])): ?>
                                 <div class="h-48 overflow-hidden">
                                     <img src="<?= htmlspecialchars($blog['image_url']) ?>" 
-                                         alt="<?= htmlspecialchars($blog['title']) ?>"
+                                         alt="<?= htmlspecialchars(getLocalizedField($blog, 'title')) ?>"
                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                 </div>
                                 <?php else: ?>
@@ -169,10 +169,10 @@ try {
                                         <?= date('M d, Y', strtotime($blog['created_at'])) ?>
                                     </div>
                                     <h3 class="text-xl font-bold mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                                        <?= htmlspecialchars($blog['title']) ?>
+                                        <?= htmlspecialchars(getLocalizedField($blog, 'title')) ?>
                                     </h3>
                                     <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-3">
-                                        <?= htmlspecialchars(substr($blog['content'], 0, 150)) ?>...
+                                        <?= htmlspecialchars(substr(getLocalizedField($blog, 'content'), 0, 150)) ?>...
                                     </p>
                                     <span class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium mt-4 group-hover:gap-3 transition-all">
                                         <?= t('blog.read_more') ?>

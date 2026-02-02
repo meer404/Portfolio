@@ -1,6 +1,6 @@
 <?php
 /**
- * Client Add/Edit Form - Simplified
+ * Client Add/Edit Form with Multi-Language Support
  */
 $isEdit = isset($_GET['id']) && is_numeric($_GET['id']);
 $pageTitle = $isEdit ? 'Edit Client' : 'Add Client';
@@ -36,6 +36,7 @@ if ($isEdit) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $company = trim($_POST['company'] ?? '');
+    $company_ku = trim($_POST['company_ku'] ?? '');
     $website_url = trim($_POST['website_url'] ?? '');
     $logo_url = $client['logo_url'] ?? '';
 
@@ -81,11 +82,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         try {
             if ($isEdit) {
-                $stmt = $db->prepare("UPDATE clients SET name = ?, company = ?, website_url = ?, logo_url = ? WHERE id = ?");
-                $stmt->execute([$name, $company, $website_url, $logo_url, $_GET['id']]);
+                $stmt = $db->prepare("UPDATE clients SET name = ?, company = ?, company_ku = ?, website_url = ?, logo_url = ? WHERE id = ?");
+                $stmt->execute([$name, $company, $company_ku, $website_url, $logo_url, $_GET['id']]);
             } else {
-                $stmt = $db->prepare("INSERT INTO clients (name, company, website_url, logo_url) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$name, $company, $website_url, $logo_url]);
+                $stmt = $db->prepare("INSERT INTO clients (name, company, company_ku, website_url, logo_url) VALUES (?, ?, ?, ?, ?)");
+                $stmt->execute([$name, $company, $company_ku, $website_url, $logo_url]);
             }
             header('Location: clients.php');
             exit;
@@ -115,21 +116,31 @@ require_once 'includes/sidebar.php';
 
     <div class="bg-gray-900 rounded-2xl border border-gray-800 p-6">
         <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Client Name *</label>
+                <input type="text" id="name" name="name" required
+                       class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                       placeholder="John Doe"
+                       value="<?= htmlspecialchars($client['name'] ?? $_POST['name'] ?? '') ?>">
+            </div>
+
+            <!-- Company Names - English & Kurdish -->
             <div class="grid sm:grid-cols-2 gap-6">
                 <div>
-                    <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Client Name *</label>
-                    <input type="text" id="name" name="name" required
-                           class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
-                           placeholder="John Doe"
-                           value="<?= htmlspecialchars($client['name'] ?? $_POST['name'] ?? '') ?>">
-                </div>
-
-                <div>
-                    <label for="company" class="block text-sm font-medium text-gray-300 mb-2">Company</label>
+                    <label for="company" class="block text-sm font-medium text-gray-300 mb-2">🇬🇧 Company (English)</label>
                     <input type="text" id="company" name="company"
                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
                            placeholder="Tech Company Inc."
                            value="<?= htmlspecialchars($client['company'] ?? $_POST['company'] ?? '') ?>">
+                </div>
+
+                <div dir="rtl">
+                    <label for="company_ku" class="block text-sm font-medium text-gray-300 mb-2">🇮🇶 کۆمپانیا (کوردی)</label>
+                    <input type="text" id="company_ku" name="company_ku"
+                           class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                           style="font-family: 'Noto Sans Arabic', sans-serif;"
+                           placeholder="ناوی کۆمپانیا"
+                           value="<?= htmlspecialchars($client['company_ku'] ?? $_POST['company_ku'] ?? '') ?>">
                 </div>
             </div>
 

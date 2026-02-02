@@ -1,6 +1,6 @@
 <?php
 /**
- * Project Add/Edit Form with Image Upload
+ * Project Add/Edit Form with Multi-Language Support
  */
 $isEdit = isset($_GET['id']) && is_numeric($_GET['id']);
 $pageTitle = $isEdit ? 'Edit Project' : 'Add Project';
@@ -35,12 +35,14 @@ if ($isEdit) {
 // Handle form submission BEFORE any HTML output
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
+    $title_ku = trim($_POST['title_ku'] ?? '');
     $description = trim($_POST['description'] ?? '');
+    $description_ku = trim($_POST['description_ku'] ?? '');
     $project_link = trim($_POST['project_link'] ?? '');
     $image_url = $project['image_url'] ?? ''; // Keep existing image if no new upload
 
-    if (empty($title)) $errors[] = 'Title is required';
-    if (empty($description)) $errors[] = 'Description is required';
+    if (empty($title)) $errors[] = 'Title (English) is required';
+    if (empty($description)) $errors[] = 'Description (English) is required';
 
     // Handle image upload
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -81,18 +83,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors[] = 'Failed to upload image';
             }
         }
-    } elseif (!$isEdit && (!isset($_FILES['image']) || $_FILES['image']['error'] === UPLOAD_ERR_NO_FILE)) {
-        // Image is optional, so no error for new projects without image
     }
 
     if (empty($errors)) {
         try {
             if ($isEdit) {
-                $stmt = $db->prepare("UPDATE projects SET title = ?, description = ?, image_url = ?, project_link = ? WHERE id = ?");
-                $stmt->execute([$title, $description, $image_url, $project_link, $_GET['id']]);
+                $stmt = $db->prepare("UPDATE projects SET title = ?, title_ku = ?, description = ?, description_ku = ?, image_url = ?, project_link = ? WHERE id = ?");
+                $stmt->execute([$title, $title_ku, $description, $description_ku, $image_url, $project_link, $_GET['id']]);
             } else {
-                $stmt = $db->prepare("INSERT INTO projects (title, description, image_url, project_link) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$title, $description, $image_url, $project_link]);
+                $stmt = $db->prepare("INSERT INTO projects (title, title_ku, description, description_ku, image_url, project_link) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$title, $title_ku, $description, $description_ku, $image_url, $project_link]);
             }
             header('Location: projects.php');
             exit;
@@ -106,6 +106,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once 'includes/header.php';
 require_once 'includes/sidebar.php';
 ?>
+
+<style>
+.lang-tabs { display: flex; gap: 0; margin-bottom: 1rem; }
+.lang-tab { padding: 0.75rem 1.5rem; background: #1f2937; border: 1px solid #374151; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+.lang-tab:first-child { border-radius: 0.75rem 0 0 0.75rem; }
+.lang-tab:last-child { border-radius: 0 0.75rem 0.75rem 0; }
+.lang-tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: #667eea; color: white; }
+.lang-tab:not(.active):hover { background: #374151; }
+.lang-content { display: none; }
+.lang-content.active { display: block; }
+</style>
 
 <div class="max-w-2xl">
     <a href="projects.php" class="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors">
@@ -123,20 +134,49 @@ require_once 'includes/sidebar.php';
 
     <div class="bg-gray-900 rounded-2xl border border-gray-800 p-6">
         <form method="POST" enctype="multipart/form-data" class="space-y-6">
-            <div>
-                <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Title *</label>
-                <input type="text" id="title" name="title" required
-                       class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
-                       value="<?= htmlspecialchars($project['title'] ?? $_POST['title'] ?? '') ?>">
+            
+            <!-- Language Tabs -->
+            <div class="lang-tabs">
+                <div class="lang-tab active" onclick="switchLang('en')">🇬🇧 English</div>
+                <div class="lang-tab" onclick="switchLang('ku')">🇮🇶 کوردی</div>
             </div>
 
-            <div>
-                <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Description *</label>
-                <textarea id="description" name="description" rows="4" required
-                          class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all resize-none"><?= htmlspecialchars($project['description'] ?? $_POST['description'] ?? '') ?></textarea>
+            <!-- English Content -->
+            <div id="lang-en" class="lang-content active space-y-6">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Title (English) *</label>
+                    <input type="text" id="title" name="title" required
+                           class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                           value="<?= htmlspecialchars($project['title'] ?? $_POST['title'] ?? '') ?>">
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Description (English) *</label>
+                    <textarea id="description" name="description" rows="4" required
+                              class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all resize-none"><?= htmlspecialchars($project['description'] ?? $_POST['description'] ?? '') ?></textarea>
+                </div>
             </div>
 
-            <div>
+            <!-- Kurdish Content -->
+            <div id="lang-ku" class="lang-content space-y-6" dir="rtl">
+                <div>
+                    <label for="title_ku" class="block text-sm font-medium text-gray-300 mb-2">ناونیشان (کوردی)</label>
+                    <input type="text" id="title_ku" name="title_ku"
+                           class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                           style="font-family: 'Noto Sans Arabic', sans-serif;"
+                           value="<?= htmlspecialchars($project['title_ku'] ?? $_POST['title_ku'] ?? '') ?>">
+                </div>
+
+                <div>
+                    <label for="description_ku" class="block text-sm font-medium text-gray-300 mb-2">وەسف (کوردی)</label>
+                    <textarea id="description_ku" name="description_ku" rows="4"
+                              class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all resize-none"
+                              style="font-family: 'Noto Sans Arabic', sans-serif;"><?= htmlspecialchars($project['description_ku'] ?? $_POST['description_ku'] ?? '') ?></textarea>
+                </div>
+            </div>
+
+            <!-- Image Upload (shared) -->
+            <div dir="ltr">
                 <label for="image" class="block text-sm font-medium text-gray-300 mb-2">Project Image</label>
                 
                 <?php if ($isEdit && !empty($project['image_url'])): ?>
@@ -168,7 +208,8 @@ require_once 'includes/sidebar.php';
                 </div>
             </div>
 
-            <div>
+            <!-- Project Link (shared) -->
+            <div dir="ltr">
                 <label for="project_link" class="block text-sm font-medium text-gray-300 mb-2">Project Link</label>
                 <input type="url" id="project_link" name="project_link"
                        class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
@@ -189,6 +230,16 @@ require_once 'includes/sidebar.php';
 </div>
 
 <script>
+function switchLang(lang) {
+    // Update tabs
+    document.querySelectorAll('.lang-tab').forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Update content
+    document.querySelectorAll('.lang-content').forEach(content => content.classList.remove('active'));
+    document.getElementById('lang-' + lang).classList.add('active');
+}
+
 function previewImage(input) {
     const preview = document.getElementById('image-preview');
     const placeholder = document.getElementById('upload-placeholder');

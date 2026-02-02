@@ -131,4 +131,12 @@ return [
         'switch' => 'English',
         'current' => 'کوردی',
     ],
+    
+    // Page Titles - ناونیشانی لاپەڕەکان
+    'page' => [
+        'all_blogs_title' => 'هەموو بابەتەکان | پۆرتفۆلیۆ',
+        'all_projects_title' => 'هەموو پڕۆژەکان | پۆرتفۆلیۆ',
+        'blog_title' => ':title | بلۆگ',
+        'project_title' => ':title | پۆرتفۆلیۆ',
+    ],
 ];

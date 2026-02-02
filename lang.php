@@ -127,3 +127,16 @@ function langUrl($lang) {
 function getOtherLanguage() {
     return getCurrentLanguage() === 'en' ? 'ku' : 'en';
 }
+
+/**
+ * Get localized field value based on current language
+ * Falls back to English if Kurdish translation is empty
+ */
+function getLocalizedField($item, $field) {
+    $lang = getCurrentLanguage();
+    $kuField = $field . '_ku';
+    if ($lang === 'ku' && !empty($item[$kuField])) {
+        return $item[$kuField];
+    }
+    return $item[$field] ?? '';
+}

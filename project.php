@@ -42,7 +42,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?= htmlspecialchars(substr($project['description'], 0, 160)) ?>">
-    <title><?= htmlspecialchars($project['title']) ?> | Portfolio</title>
+    <title><?= t('page.project_title', ['title' => htmlspecialchars($project['title'])]) ?></title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -168,7 +168,7 @@ try {
                     <?= date('F d, Y', strtotime($project['created_at'])) ?>
                 </div>
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-                    <?= htmlspecialchars($project['title']) ?>
+                    <?= htmlspecialchars(getLocalizedField($project, 'title')) ?>
                 </h1>
             </header>
             
@@ -179,14 +179,14 @@ try {
             ?>
             <div class="mb-10 animate-fade-in" style="animation-delay: 0.1s;">
                 <img src="<?= htmlspecialchars($imgUrl) ?>" 
-                     alt="<?= htmlspecialchars($project['title']) ?>"
+                     alt="<?= htmlspecialchars(getLocalizedField($project, 'title')) ?>"
                      class="w-full h-64 sm:h-80 lg:h-96 object-cover rounded-2xl shadow-lg">
             </div>
             <?php endif; ?>
             
             <!-- Project Description -->
             <div class="prose-content text-gray-600 dark:text-gray-300 text-lg animate-fade-in" style="animation-delay: 0.2s;">
-                <?= nl2br(htmlspecialchars($project['description'])) ?>
+                <?= nl2br(htmlspecialchars(getLocalizedField($project, 'description'))) ?>
             </div>
             
             <!-- Project Link -->

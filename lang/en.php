@@ -130,4 +130,12 @@ return [
         'switch' => 'کوردی',
         'current' => 'English',
     ],
+    
+    // Page Titles
+    'page' => [
+        'all_blogs_title' => 'All Blog Posts | Portfolio',
+        'all_projects_title' => 'All Projects | Portfolio',
+        'blog_title' => ':title | Blog',
+        'project_title' => ':title | Portfolio',
+    ],
 ];

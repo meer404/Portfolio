@@ -21,7 +21,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Browse all my portfolio projects showcasing web development skills">
-    <title>All Projects | Portfolio</title>
+    <title><?= t('page.all_projects_title') ?></title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -158,7 +158,7 @@ try {
                                     }
                                     ?>
                                     <img src="<?= htmlspecialchars($imgSrc) ?>" 
-                                         alt="<?= htmlspecialchars($project['title']) ?>"
+                                         alt="<?= htmlspecialchars(getLocalizedField($project, 'title')) ?>"
                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
                                         <span class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium">
@@ -167,9 +167,9 @@ try {
                                     </div>
                                 </div>
                                 <div class="p-6">
-                                    <h3 class="text-xl font-bold mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors"><?= htmlspecialchars($project['title']) ?></h3>
+                                    <h3 class="text-xl font-bold mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors"><?= htmlspecialchars(getLocalizedField($project, 'title')) ?></h3>
                                     <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-2">
-                                        <?= htmlspecialchars($project['description']) ?>
+                                        <?= htmlspecialchars(getLocalizedField($project, 'description')) ?>
                                     </p>
                                 </div>
                             </div>

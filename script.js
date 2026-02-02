@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (error) {
                 formMessage.classList.remove('hidden');
                 formMessage.className = 'mt-4 p-4 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30';
-                formMessage.textContent = 'An error occurred. Please try again.';
+                formMessage.textContent = contactForm.dataset.errorMessage || 'An error occurred. Please try again.';
             } finally {
                 // Reset button state
                 submitBtn.disabled = false;

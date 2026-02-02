@@ -45,7 +45,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?= htmlspecialchars(substr($blog['content'], 0, 160)) ?>">
-    <title><?= htmlspecialchars($blog['title']) ?> | Blog</title>
+    <title><?= t('page.blog_title', ['title' => htmlspecialchars($blog['title'])]) ?></title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -171,7 +171,7 @@ try {
                     <?= date('F d, Y', strtotime($blog['created_at'])) ?>
                 </div>
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-                    <?= htmlspecialchars($blog['title']) ?>
+                    <?= htmlspecialchars(getLocalizedField($blog, 'title')) ?>
                 </h1>
             </header>
             
@@ -179,14 +179,14 @@ try {
             <?php if (!empty($blog['image_url'])): ?>
             <div class="mb-10 animate-fade-in" style="animation-delay: 0.1s;">
                 <img src="<?= htmlspecialchars($blog['image_url']) ?>" 
-                     alt="<?= htmlspecialchars($blog['title']) ?>"
+                     alt="<?= htmlspecialchars(getLocalizedField($blog, 'title')) ?>"
                      class="w-full h-64 sm:h-80 lg:h-96 object-cover rounded-2xl shadow-lg">
             </div>
             <?php endif; ?>
             
             <!-- Post Content -->
             <div class="prose-content text-gray-600 dark:text-gray-300 text-lg animate-fade-in" style="animation-delay: 0.2s;">
-                <?= nl2br(htmlspecialchars($blog['content'])) ?>
+                <?= nl2br(htmlspecialchars(getLocalizedField($blog, 'content'))) ?>
             </div>
             
             <!-- Share Section -->

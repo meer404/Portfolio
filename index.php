@@ -396,15 +396,15 @@ function getSetting($key, $default = '') {
                            class="glass-card rounded-2xl p-6 hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center min-w-[140px] block cursor-pointer">
                             <?php if (!empty($client['logo_url'])): ?>
                             <img src="<?= htmlspecialchars($client['logo_url']) ?>" 
-                                 alt="<?= htmlspecialchars($client['company'] ?: $client['name']) ?>"
+                                 alt="<?= htmlspecialchars(getLocalizedField($client, 'company') ?: $client['name']) ?>"
                                  class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-full grayscale group-hover:grayscale-0 transition-all duration-300">
                             <?php else: ?>
                             <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                <span class="text-2xl font-bold text-purple-500"><?= strtoupper(substr($client['company'] ?: $client['name'], 0, 1)) ?></span>
+                                <span class="text-2xl font-bold text-purple-500"><?= strtoupper(substr(getLocalizedField($client, 'company') ?: $client['name'], 0, 1)) ?></span>
                             </div>
                             <?php endif; ?>
-                            <?php if (!empty($client['company'])): ?>
-                            <p class="mt-3 text-sm font-medium text-gray-600 dark:text-gray-400 text-center"><?= htmlspecialchars($client['company']) ?></p>
+                            <?php if (!empty($client['company']) || !empty($client['company_ku'])): ?>
+                            <p class="mt-3 text-sm font-medium text-gray-600 dark:text-gray-400 text-center"><?= htmlspecialchars(getLocalizedField($client, 'company')) ?></p>
                             <?php endif; ?>
                         </a>
                     </div>
@@ -454,20 +454,20 @@ function getSetting($key, $default = '') {
                                 }
                                 ?>
                                 <img src="<?= htmlspecialchars($imgSrc) ?>" 
-                                     alt="<?= htmlspecialchars($project['title']) ?>"
+                                     alt="<?= htmlspecialchars(getLocalizedField($project, 'title')) ?>"
                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
                                     <a href="<?= htmlspecialchars($project['project_link']) ?>" 
                                        target="_blank"
                                        class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/30 transition-colors">
-                                        View Project →
+                                        <?= t('portfolio.view_project') ?> →
                                     </a>
                                 </div>
                             </div>
                             <div class="p-6">
-                                <h3 class="text-xl font-bold mb-2"><?= htmlspecialchars($project['title']) ?></h3>
+                                <h3 class="text-xl font-bold mb-2"><?= htmlspecialchars(getLocalizedField($project, 'title')) ?></h3>
                                 <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-2">
-                                    <?= htmlspecialchars($project['description']) ?>
+                                    <?= htmlspecialchars(getLocalizedField($project, 'description')) ?>
                                 </p>
                             </div>
                         </div>
@@ -508,7 +508,7 @@ function getSetting($key, $default = '') {
                                 <?php if (!empty($blog['image_url'])): ?>
                                 <div class="h-48 overflow-hidden">
                                     <img src="<?= htmlspecialchars($blog['image_url']) ?>" 
-                                         alt="<?= htmlspecialchars($blog['title']) ?>"
+                                         alt="<?= htmlspecialchars(getLocalizedField($blog, 'title')) ?>"
                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                 </div>
                                 <?php else: ?>
@@ -526,10 +526,10 @@ function getSetting($key, $default = '') {
                                         <?= date('M d, Y', strtotime($blog['created_at'])) ?>
                                     </div>
                                     <h3 class="text-xl font-bold mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                                        <?= htmlspecialchars($blog['title']) ?>
+                                        <?= htmlspecialchars(getLocalizedField($blog, 'title')) ?>
                                     </h3>
                                     <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-3">
-                                        <?= htmlspecialchars(substr($blog['content'], 0, 150)) ?>...
+                                        <?= htmlspecialchars(substr(getLocalizedField($blog, 'content'), 0, 150)) ?>...
                                     </p>
                                     <span class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 font-medium mt-4 group-hover:gap-3 transition-all">
                                         <?= t('blog.read_more') ?>
@@ -628,7 +628,7 @@ function getSetting($key, $default = '') {
                 
                 <!-- Contact Form -->
                 <div class="animate-on-scroll">
-                    <form id="contact-form" class="glass-card rounded-2xl p-8">
+                    <form id="contact-form" class="glass-card rounded-2xl p-8" data-error-message="<?= t('form.generic_error') ?>">
                         <div class="grid sm:grid-cols-2 gap-6 mb-6">
                             <div>
                                 <label for="name" class="block text-sm font-medium mb-2"><?= t('contact.your_name') ?></label>
