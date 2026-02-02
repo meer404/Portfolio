@@ -315,13 +315,19 @@ function getSetting($key, $default = '') {
                     </h3>
                     <div class="space-y-8">
                         <?php foreach ($experience as $exp): ?>
+                        <?php
+                            $lang = getCurrentLanguage();
+                            $expTitle = ($lang === 'ku' && !empty($exp['title_ku'])) ? $exp['title_ku'] : ($exp['title'] ?? '');
+                            $expCompany = ($lang === 'ku' && !empty($exp['company_ku'])) ? $exp['company_ku'] : ($exp['company'] ?? '');
+                            $expDesc = ($lang === 'ku' && !empty($exp['description_ku'])) ? $exp['description_ku'] : ($exp['description'] ?? '');
+                        ?>
                         <div class="relative pl-8 border-l-2 border-purple-500/30">
                             <div class="absolute left-0 top-0 w-4 h-4 -translate-x-1/2 rounded-full gradient-bg"></div>
                             <div class="glass-card rounded-xl p-6">
                                 <span class="text-purple-600 dark:text-purple-400 text-sm font-medium"><?= htmlspecialchars($exp['period'] ?? '') ?></span>
-                                <h4 class="text-xl font-bold mt-2"><?= htmlspecialchars($exp['title'] ?? '') ?></h4>
-                                <p class="text-gray-500 dark:text-gray-400 mb-3"><?= htmlspecialchars($exp['company'] ?? '') ?></p>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm"><?= htmlspecialchars($exp['description'] ?? '') ?></p>
+                                <h4 class="text-xl font-bold mt-2"><?= htmlspecialchars($expTitle) ?></h4>
+                                <p class="text-gray-500 dark:text-gray-400 mb-3"><?= htmlspecialchars($expCompany) ?></p>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm"><?= htmlspecialchars($expDesc) ?></p>
                             </div>
                         </div>
                         <?php endforeach; ?>
@@ -345,13 +351,19 @@ function getSetting($key, $default = '') {
                     </h3>
                     <div class="space-y-8">
                         <?php foreach ($education as $edu): ?>
+                        <?php
+                            $lang = getCurrentLanguage();
+                            $eduTitle = ($lang === 'ku' && !empty($edu['title_ku'])) ? $edu['title_ku'] : ($edu['title'] ?? '');
+                            $eduInst = ($lang === 'ku' && !empty($edu['institution_ku'])) ? $edu['institution_ku'] : ($edu['institution'] ?? '');
+                            $eduDesc = ($lang === 'ku' && !empty($edu['description_ku'])) ? $edu['description_ku'] : ($edu['description'] ?? '');
+                        ?>
                         <div class="relative pl-8 border-l-2 border-purple-500/30">
                             <div class="absolute left-0 top-0 w-4 h-4 -translate-x-1/2 rounded-full gradient-bg"></div>
                             <div class="glass-card rounded-xl p-6">
                                 <span class="text-purple-600 dark:text-purple-400 text-sm font-medium"><?= htmlspecialchars($edu['period'] ?? '') ?></span>
-                                <h4 class="text-xl font-bold mt-2"><?= htmlspecialchars($edu['title'] ?? '') ?></h4>
-                                <p class="text-gray-500 dark:text-gray-400 mb-3"><?= htmlspecialchars($edu['institution'] ?? '') ?></p>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm"><?= htmlspecialchars($edu['description'] ?? '') ?></p>
+                                <h4 class="text-xl font-bold mt-2"><?= htmlspecialchars($eduTitle) ?></h4>
+                                <p class="text-gray-500 dark:text-gray-400 mb-3"><?= htmlspecialchars($eduInst) ?></p>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm"><?= htmlspecialchars($eduDesc) ?></p>
                             </div>
                         </div>
                         <?php endforeach; ?>

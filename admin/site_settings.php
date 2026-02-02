@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $settings['about_clients_ku'] = $_POST['about_clients_ku'] ?? '';
     }
     
-    // Resume Section - Experience (JSON)
+    // Resume Section - Experience (JSON with Kurdish support)
     if (isset($_POST['exp_period'])) {
         $experience = [];
         foreach ($_POST['exp_period'] as $i => $period) {
@@ -65,15 +65,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $experience[] = [
                     'period' => $period,
                     'title' => $_POST['exp_title'][$i] ?? '',
+                    'title_ku' => $_POST['exp_title_ku'][$i] ?? '',
                     'company' => $_POST['exp_company'][$i] ?? '',
-                    'description' => $_POST['exp_description'][$i] ?? ''
+                    'company_ku' => $_POST['exp_company_ku'][$i] ?? '',
+                    'description' => $_POST['exp_description'][$i] ?? '',
+                    'description_ku' => $_POST['exp_description_ku'][$i] ?? ''
                 ];
             }
         }
         $settings['resume_experience'] = json_encode($experience);
     }
     
-    // Resume Section - Education (JSON)
+    // Resume Section - Education (JSON with Kurdish support)
     if (isset($_POST['edu_period'])) {
         $education = [];
         foreach ($_POST['edu_period'] as $i => $period) {
@@ -81,8 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $education[] = [
                     'period' => $period,
                     'title' => $_POST['edu_title'][$i] ?? '',
+                    'title_ku' => $_POST['edu_title_ku'][$i] ?? '',
                     'institution' => $_POST['edu_institution'][$i] ?? '',
-                    'description' => $_POST['edu_description'][$i] ?? ''
+                    'institution_ku' => $_POST['edu_institution_ku'][$i] ?? '',
+                    'description' => $_POST['edu_description'][$i] ?? '',
+                    'description_ku' => $_POST['edu_description_ku'][$i] ?? ''
                 ];
             }
         }
@@ -389,6 +395,7 @@ function switchLang(lang, element) {
         <div id="experience-container" class="space-y-4">
             <?php foreach ($experience as $i => $exp): ?>
             <div class="experience-entry bg-gray-800 rounded-xl p-4">
+                <div class="text-xs text-purple-400 font-medium mb-3">🇬🇧 English</div>
                 <div class="grid md:grid-cols-2 gap-4 mb-4">
                     <input type="text" name="exp_period[]" value="<?= htmlspecialchars($exp['period']) ?>" placeholder="Period (e.g., 2022 - Present)"
                            class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none">
@@ -399,12 +406,26 @@ function switchLang(lang, element) {
                     <input type="text" name="exp_company[]" value="<?= htmlspecialchars($exp['company']) ?>" placeholder="Company Name"
                            class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none">
                 </div>
-                <div class="flex gap-4">
+                <div class="mb-4">
                     <textarea name="exp_description[]" rows="2" placeholder="Description"
-                              class="flex-1 px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none"><?= htmlspecialchars($exp['description']) ?></textarea>
-                    <button type="button" onclick="this.closest('.experience-entry').remove()" class="text-red-400 hover:text-red-300 p-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                    </button>
+                              class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none"><?= htmlspecialchars($exp['description']) ?></textarea>
+                </div>
+                
+                <div class="border-t border-gray-700 pt-3 mt-3">
+                    <div class="text-xs text-purple-400 font-medium mb-3" dir="rtl">🇮🇶 کوردی</div>
+                    <div class="grid md:grid-cols-2 gap-4 mb-4" dir="rtl">
+                        <input type="text" name="exp_title_ku[]" value="<?= htmlspecialchars($exp['title_ku'] ?? '') ?>" placeholder="ناونیشانی کار"
+                               class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none" style="font-family: 'Noto Sans Arabic', sans-serif;">
+                        <input type="text" name="exp_company_ku[]" value="<?= htmlspecialchars($exp['company_ku'] ?? '') ?>" placeholder="ناوی کۆمپانیا"
+                               class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none" style="font-family: 'Noto Sans Arabic', sans-serif;">
+                    </div>
+                    <div class="flex gap-4" dir="rtl">
+                        <textarea name="exp_description_ku[]" rows="2" placeholder="وەسف"
+                                  class="flex-1 px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none" style="font-family: 'Noto Sans Arabic', sans-serif;"><?= htmlspecialchars($exp['description_ku'] ?? '') ?></textarea>
+                        <button type="button" onclick="this.closest('.experience-entry').remove()" class="text-red-400 hover:text-red-300 p-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -421,6 +442,7 @@ function switchLang(lang, element) {
         <div id="education-container" class="space-y-4">
             <?php foreach ($education as $i => $edu): ?>
             <div class="education-entry bg-gray-800 rounded-xl p-4">
+                <div class="text-xs text-purple-400 font-medium mb-3">🇬🇧 English</div>
                 <div class="grid md:grid-cols-2 gap-4 mb-4">
                     <input type="text" name="edu_period[]" value="<?= htmlspecialchars($edu['period']) ?>" placeholder="Period (e.g., 2014 - 2018)"
                            class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none">
@@ -431,12 +453,26 @@ function switchLang(lang, element) {
                     <input type="text" name="edu_institution[]" value="<?= htmlspecialchars($edu['institution']) ?>" placeholder="Institution Name"
                            class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none">
                 </div>
-                <div class="flex gap-4">
+                <div class="mb-4">
                     <textarea name="edu_description[]" rows="2" placeholder="Description"
-                              class="flex-1 px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none"><?= htmlspecialchars($edu['description']) ?></textarea>
-                    <button type="button" onclick="this.closest('.education-entry').remove()" class="text-red-400 hover:text-red-300 p-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                    </button>
+                              class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none"><?= htmlspecialchars($edu['description']) ?></textarea>
+                </div>
+                
+                <div class="border-t border-gray-700 pt-3 mt-3">
+                    <div class="text-xs text-purple-400 font-medium mb-3" dir="rtl">🇮🇶 کوردی</div>
+                    <div class="grid md:grid-cols-2 gap-4 mb-4" dir="rtl">
+                        <input type="text" name="edu_title_ku[]" value="<?= htmlspecialchars($edu['title_ku'] ?? '') ?>" placeholder="بڕوانامە/سەرتیفیکەیت"
+                               class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none" style="font-family: 'Noto Sans Arabic', sans-serif;">
+                        <input type="text" name="edu_institution_ku[]" value="<?= htmlspecialchars($edu['institution_ku'] ?? '') ?>" placeholder="ناوی دامەزراوە"
+                               class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none" style="font-family: 'Noto Sans Arabic', sans-serif;">
+                    </div>
+                    <div class="flex gap-4" dir="rtl">
+                        <textarea name="edu_description_ku[]" rows="2" placeholder="وەسف"
+                                  class="flex-1 px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none" style="font-family: 'Noto Sans Arabic', sans-serif;"><?= htmlspecialchars($edu['description_ku'] ?? '') ?></textarea>
+                        <button type="button" onclick="this.closest('.education-entry').remove()" class="text-red-400 hover:text-red-300 p-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -467,6 +503,7 @@ function addExperience() {
     const container = document.getElementById('experience-container');
     const html = `
         <div class="experience-entry bg-gray-800 rounded-xl p-4">
+            <div class="text-xs text-purple-400 font-medium mb-3">🇬🇧 English</div>
             <div class="grid md:grid-cols-2 gap-4 mb-4">
                 <input type="text" name="exp_period[]" placeholder="Period (e.g., 2022 - Present)"
                        class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none">
@@ -477,12 +514,26 @@ function addExperience() {
                 <input type="text" name="exp_company[]" placeholder="Company Name"
                        class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none">
             </div>
-            <div class="flex gap-4">
+            <div class="mb-4">
                 <textarea name="exp_description[]" rows="2" placeholder="Description"
-                          class="flex-1 px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none"></textarea>
-                <button type="button" onclick="this.closest('.experience-entry').remove()" class="text-red-400 hover:text-red-300 p-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
+                          class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none"></textarea>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-3 mt-3">
+                <div class="text-xs text-purple-400 font-medium mb-3" dir="rtl">🇮🇶 کوردی</div>
+                <div class="grid md:grid-cols-2 gap-4 mb-4" dir="rtl">
+                    <input type="text" name="exp_title_ku[]" placeholder="ناونیشانی کار"
+                           class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none" style="font-family: 'Noto Sans Arabic', sans-serif;">
+                    <input type="text" name="exp_company_ku[]" placeholder="ناوی کۆمپانیا"
+                           class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none" style="font-family: 'Noto Sans Arabic', sans-serif;">
+                </div>
+                <div class="flex gap-4" dir="rtl">
+                    <textarea name="exp_description_ku[]" rows="2" placeholder="وەسف"
+                              class="flex-1 px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none" style="font-family: 'Noto Sans Arabic', sans-serif;"></textarea>
+                    <button type="button" onclick="this.closest('.experience-entry').remove()" class="text-red-400 hover:text-red-300 p-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
             </div>
         </div>
     `;
@@ -493,6 +544,7 @@ function addEducation() {
     const container = document.getElementById('education-container');
     const html = `
         <div class="education-entry bg-gray-800 rounded-xl p-4">
+            <div class="text-xs text-purple-400 font-medium mb-3">🇬🇧 English</div>
             <div class="grid md:grid-cols-2 gap-4 mb-4">
                 <input type="text" name="edu_period[]" placeholder="Period (e.g., 2014 - 2018)"
                        class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none">
@@ -503,12 +555,26 @@ function addEducation() {
                 <input type="text" name="edu_institution[]" placeholder="Institution Name"
                        class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none">
             </div>
-            <div class="flex gap-4">
+            <div class="mb-4">
                 <textarea name="edu_description[]" rows="2" placeholder="Description"
-                          class="flex-1 px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none"></textarea>
-                <button type="button" onclick="this.closest('.education-entry').remove()" class="text-red-400 hover:text-red-300 p-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
+                          class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none"></textarea>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-3 mt-3">
+                <div class="text-xs text-purple-400 font-medium mb-3" dir="rtl">🇮🇶 کوردی</div>
+                <div class="grid md:grid-cols-2 gap-4 mb-4" dir="rtl">
+                    <input type="text" name="edu_title_ku[]" placeholder="بڕوانامە/سەرتیفیکەیت"
+                           class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none" style="font-family: 'Noto Sans Arabic', sans-serif;">
+                    <input type="text" name="edu_institution_ku[]" placeholder="ناوی دامەزراوە"
+                           class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none" style="font-family: 'Noto Sans Arabic', sans-serif;">
+                </div>
+                <div class="flex gap-4" dir="rtl">
+                    <textarea name="edu_description_ku[]" rows="2" placeholder="وەسف"
+                              class="flex-1 px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-purple-500 outline-none resize-none" style="font-family: 'Noto Sans Arabic', sans-serif;"></textarea>
+                    <button type="button" onclick="this.closest('.education-entry').remove()" class="text-red-400 hover:text-red-300 p-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
             </div>
         </div>
     `;
