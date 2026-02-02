@@ -29,8 +29,22 @@ CREATE TABLE IF NOT EXISTS messages (
     sender_email VARCHAR(255) NOT NULL,
     subject VARCHAR(255),
     message_text TEXT NOT NULL,
+    is_read TINYINT(1) DEFAULT 0,
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Admins table for authentication
+CREATE TABLE IF NOT EXISTS admins (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert default admin (password: admin123)
+INSERT INTO admins (username, password, email) VALUES
+('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin@example.com');
 
 -- Insert sample projects
 INSERT INTO projects (title, description, image_url, project_link) VALUES
