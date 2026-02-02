@@ -43,8 +43,9 @@ CREATE TABLE IF NOT EXISTS admins (
 );
 
 -- Insert default admin (password: admin123)
+-- Note: If login fails, run setup_admin.php to reset the password
 INSERT INTO admins (username, password, email) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin@example.com');
+('admin', '$2y$10$xLRsYP9hJhGKfuWRqyUK0ulIbEgYU8.U.D6YZG6.JNL5n6InqyDOy', 'admin@example.com');
 
 -- Insert sample projects
 INSERT INTO projects (title, description, image_url, project_link) VALUES
