@@ -107,6 +107,7 @@ CREATE TABLE IF NOT EXISTS clients (
     name VARCHAR(100) NOT NULL,
     company VARCHAR(100),
     logo_url VARCHAR(500),
+    website_url VARCHAR(500),
     testimonial TEXT,
     rating INT DEFAULT 5,
     is_featured TINYINT(1) DEFAULT 0,
@@ -114,10 +115,10 @@ CREATE TABLE IF NOT EXISTS clients (
 );
 
 -- Insert sample clients
-INSERT INTO clients (name, company, logo_url, testimonial, rating, is_featured) VALUES
-('Sarah Johnson', 'Tech Innovations Inc.', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', 'Working with John was an absolute pleasure. He delivered our e-commerce platform ahead of schedule and exceeded all expectations. His attention to detail and problem-solving skills are exceptional.', 5, 1),
-('Michael Chen', 'Digital Solutions Co.', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', 'John transformed our outdated website into a modern, responsive masterpiece. His expertise in both frontend and backend development made the entire process seamless.', 5, 1),
-('Emily Rodriguez', 'StartUp Hub', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150', 'Exceptional work! John built our task management app from scratch, and it has significantly improved our team productivity. Highly recommended!', 5, 1),
-('David Park', 'Creative Agency', 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150', 'John''s technical skills combined with his creative approach resulted in a website that perfectly represents our brand. Great communication throughout the project.', 4, 0),
-('Lisa Thompson', 'E-Store Solutions', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', 'Professional, reliable, and incredibly talented. John delivered a high-quality product that has helped our business grow exponentially.', 5, 0);
+INSERT INTO clients (name, company, logo_url, website_url, testimonial, rating, is_featured) VALUES
+('Sarah Johnson', 'Tech Innovations Inc.', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', 'https://example.com', 'Working with John was an absolute pleasure. He delivered our e-commerce platform ahead of schedule and exceeded all expectations. His attention to detail and problem-solving skills are exceptional.', 5, 1),
+('Michael Chen', 'Digital Solutions Co.', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', 'https://example.com', 'John transformed our outdated website into a modern, responsive masterpiece. His expertise in both frontend and backend development made the entire process seamless.', 5, 1),
+('Emily Rodriguez', 'StartUp Hub', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150', 'https://example.com', 'Exceptional work! John built our task management app from scratch, and it has significantly improved our team productivity. Highly recommended!', 5, 1),
+('David Park', 'Creative Agency', 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150', 'https://example.com', 'John''s technical skills combined with his creative approach resulted in a website that perfectly represents our brand. Great communication throughout the project.', 4, 0),
+('Lisa Thompson', 'E-Store Solutions', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', 'https://example.com', 'Professional, reliable, and incredibly talented. John delivered a high-quality product that has helped our business grow exponentially.', 5, 0);
 

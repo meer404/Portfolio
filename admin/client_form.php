@@ -36,6 +36,7 @@ if ($isEdit) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $company = trim($_POST['company'] ?? '');
+    $website_url = trim($_POST['website_url'] ?? '');
     $testimonial = trim($_POST['testimonial'] ?? '');
     $rating = intval($_POST['rating'] ?? 5);
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
@@ -89,11 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         try {
             if ($isEdit) {
-                $stmt = $db->prepare("UPDATE clients SET name = ?, company = ?, logo_url = ?, testimonial = ?, rating = ?, is_featured = ? WHERE id = ?");
-                $stmt->execute([$name, $company, $logo_url, $testimonial, $rating, $is_featured, $_GET['id']]);
+                $stmt = $db->prepare("UPDATE clients SET name = ?, company = ?, website_url = ?, logo_url = ?, testimonial = ?, rating = ?, is_featured = ? WHERE id = ?");
+                $stmt->execute([$name, $company, $website_url, $logo_url, $testimonial, $rating, $is_featured, $_GET['id']]);
             } else {
-                $stmt = $db->prepare("INSERT INTO clients (name, company, logo_url, testimonial, rating, is_featured) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$name, $company, $logo_url, $testimonial, $rating, $is_featured]);
+                $stmt = $db->prepare("INSERT INTO clients (name, company, website_url, logo_url, testimonial, rating, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$name, $company, $website_url, $logo_url, $testimonial, $rating, $is_featured]);
             }
             header('Location: clients.php');
             exit;
@@ -140,6 +141,14 @@ require_once 'includes/sidebar.php';
                            placeholder="Tech Company Inc."
                            value="<?= htmlspecialchars($client['company'] ?? $_POST['company'] ?? '') ?>">
                 </div>
+            </div>
+
+            <div>
+                <label for="website_url" class="block text-sm font-medium text-gray-300 mb-2">Website URL</label>
+                <input type="url" id="website_url" name="website_url"
+                       class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                       placeholder="https://example.com"
+                       value="<?= htmlspecialchars($client['website_url'] ?? $_POST['website_url'] ?? '') ?>">
             </div>
 
             <div>
