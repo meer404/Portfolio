@@ -63,3 +63,41 @@ INSERT INTO blogs (title, content) VALUES
 ('The Power of Clean Code', 'Writing clean, maintainable code is essential for any developer. Clean code not only makes your projects easier to understand but also simplifies debugging and collaboration. In this article, I discuss best practices for writing code that stands the test of time.'),
 ('Modern CSS Techniques', 'CSS has evolved significantly over the years. With features like Flexbox, Grid, and CSS Variables, creating complex layouts has never been easier. Let me walk you through some of my favorite modern CSS techniques that have transformed how I build websites.'),
 ('Building RESTful APIs with PHP', 'APIs are the backbone of modern web applications. In this tutorial, I explain how to design and build robust RESTful APIs using PHP and best practices for security and performance optimization.');
+
+-- Site Settings table for dynamic content management
+CREATE TABLE IF NOT EXISTS site_settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(100) NOT NULL UNIQUE,
+    setting_value TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Insert default site settings
+INSERT INTO site_settings (setting_key, setting_value) VALUES
+-- Hero Section
+('hero_greeting', 'Hello, I''m'),
+('hero_name', 'John Doe'),
+('hero_title', 'Full-Stack Web Developer'),
+('hero_description', 'I craft beautiful, responsive, and user-friendly web applications that solve real-world problems and deliver exceptional user experiences.'),
+('hero_image', ''),
+-- About Section
+('about_title', 'A Passionate Developer & Problem Solver'),
+('about_paragraph1', 'With over 5 years of experience in web development, I specialize in creating modern, scalable, and user-centric applications. My journey started with a curiosity about how websites work, and it has evolved into a deep passion for crafting digital experiences.'),
+('about_paragraph2', 'I believe in writing clean, maintainable code and staying up-to-date with the latest technologies. When I''m not coding, you''ll find me exploring new frameworks, contributing to open-source projects, or sharing knowledge through my blog.'),
+('about_experience', '5+ Years Experience'),
+('about_projects', '50+ Projects Completed'),
+('about_clients', '30+ Happy Clients'),
+-- Resume Section (JSON arrays for experience and education)
+('resume_experience', '[{"period":"2022 - Present","title":"Senior Full-Stack Developer","company":"Tech Innovations Inc.","description":"Leading development of enterprise web applications, mentoring junior developers, and implementing best practices."},{"period":"2020 - 2022","title":"Full-Stack Developer","company":"Digital Solutions Co.","description":"Developed and maintained multiple client websites and web applications using PHP, JavaScript, and modern frameworks."},{"period":"2018 - 2020","title":"Junior Web Developer","company":"StartUp Hub","description":"Started my professional journey building responsive websites and learning modern development practices."}]'),
+('resume_education', '[{"period":"2014 - 2018","title":"B.S. Computer Science","institution":"State University","description":"Graduated with honors. Focused on software engineering, database systems, and web technologies."},{"period":"2020","title":"AWS Certified Developer","institution":"Amazon Web Services","description":"Professional certification for developing and maintaining applications on AWS."},{"period":"2021","title":"Full-Stack Web Development","institution":"Udemy Certification","description":"Comprehensive course covering modern web development technologies and best practices."}]'),
+('resume_file', ''),
+-- Contact Section
+('contact_email', 'hello@johndoe.com'),
+('contact_location', 'San Francisco, CA'),
+('contact_phone', '+1 (234) 567-890'),
+-- Social Links
+('social_github', '#'),
+('social_linkedin', '#'),
+('social_twitter', '#'),
+('social_instagram', '#');
+

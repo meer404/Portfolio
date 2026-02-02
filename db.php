@@ -121,6 +121,96 @@ class Database {
     }
 
     /**
+     * Get a single site setting by key
+     */
+    public function getSetting(string $key): ?string {
+        try {
+            $stmt = $this->connection->prepare("SELECT setting_value FROM site_settings WHERE setting_key = ?");
+            $stmt->execute([$key]);
+            $result = $stmt->fetchColumn();
+            return $result !== false ? $result : null;
+        } catch (PDOException $e) {
+            error_log("Error fetching setting: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Get multiple site settings by keys
+     */
+    public function getSettings(array $keys): array {
+        try {
+            if (empty($keys)) return [];
+            $placeholders = implode(',', array_fill(0, count($keys), '?'));
+            $stmt = $this->connection->prepare("SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ($placeholders)");
+            $stmt->execute($keys);
+            $results = [];
+            while ($row = $stmt->fetch()) {
+                $results[$row['setting_key']] = $row['setting_value'];
+            }
+            return $results;
+        } catch (PDOException $e) {
+            error_log("Error fetching settings: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Get all site settings
+     */
+    public function getAllSettings(): array {
+        try {
+            $stmt = $this->connection->query("SELECT setting_key, setting_value FROM site_settings");
+            $results = [];
+            while ($row = $stmt->fetch()) {
+                $results[$row['setting_key']] = $row['setting_value'];
+            }
+            return $results;
+        } catch (PDOException $e) {
+            error_log("Error fetching all settings: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Update a single site setting
+     */
+    public function updateSetting(string $key, string $value): bool {
+        try {
+            $stmt = $this->connection->prepare(
+                "INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?)
+                 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)"
+            );
+            return $stmt->execute([$key, $value]);
+        } catch (PDOException $e) {
+            error_log("Error updating setting: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Update multiple site settings
+     */
+    public function updateSettings(array $settings): bool {
+        try {
+            $this->connection->beginTransaction();
+            $stmt = $this->connection->prepare(
+                "INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?)
+                 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)"
+            );
+            foreach ($settings as $key => $value) {
+                $stmt->execute([$key, $value]);
+            }
+            $this->connection->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->connection->rollBack();
+            error_log("Error updating settings: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Prevent cloning of singleton
      */
     private function __clone() {}
