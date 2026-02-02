@@ -11,7 +11,7 @@ try {
     $db = Database::getInstance();
     $projects = $db->getProjects(6);  // Only show 6 projects
     $blogs = $db->getBlogs(4);        // Only show 4 blogs
-    $clients = $db->getClients(6);    // Get client testimonials
+    $clients = $db->getClients(5);    // Get client testimonials
     $settings = $db->getAllSettings(); // Get all site settings
     
     // Parse JSON for experience and education

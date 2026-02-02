@@ -1,6 +1,6 @@
 <?php
 /**
- * Client Add/Edit Form with Image Upload
+ * Client Add/Edit Form - Simplified
  */
 $isEdit = isset($_GET['id']) && is_numeric($_GET['id']);
 $pageTitle = $isEdit ? 'Edit Client' : 'Add Client';
@@ -37,14 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $company = trim($_POST['company'] ?? '');
     $website_url = trim($_POST['website_url'] ?? '');
-    $testimonial = trim($_POST['testimonial'] ?? '');
-    $rating = intval($_POST['rating'] ?? 5);
-    $is_featured = isset($_POST['is_featured']) ? 1 : 0;
-    $logo_url = $client['logo_url'] ?? ''; // Keep existing image if no new upload
+    $logo_url = $client['logo_url'] ?? '';
 
     if (empty($name)) $errors[] = 'Name is required';
-    if (empty($testimonial)) $errors[] = 'Testimonial is required';
-    if ($rating < 1 || $rating > 5) $errors[] = 'Rating must be between 1 and 5';
 
     // Handle image upload
     if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
@@ -52,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $maxSize = 5 * 1024 * 1024; // 5MB
 
-        // Validate file type
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
@@ -62,18 +56,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($file['size'] > $maxSize) {
             $errors[] = 'Image size must be less than 5MB';
         } else {
-            // Generate unique filename
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
             $newFilename = uniqid('client_') . '.' . strtolower($extension);
             $uploadPath = $uploadDir . $newFilename;
 
-            // Create directory if it doesn't exist
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
 
             if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
-                // Delete old image if exists and is a local file
                 if ($isEdit && !empty($client['logo_url']) && strpos($client['logo_url'], 'uploads/clients/') !== false) {
                     $oldImagePath = '../' . $client['logo_url'];
                     if (file_exists($oldImagePath)) {
@@ -90,11 +81,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         try {
             if ($isEdit) {
-                $stmt = $db->prepare("UPDATE clients SET name = ?, company = ?, website_url = ?, logo_url = ?, testimonial = ?, rating = ?, is_featured = ? WHERE id = ?");
-                $stmt->execute([$name, $company, $website_url, $logo_url, $testimonial, $rating, $is_featured, $_GET['id']]);
+                $stmt = $db->prepare("UPDATE clients SET name = ?, company = ?, website_url = ?, logo_url = ? WHERE id = ?");
+                $stmt->execute([$name, $company, $website_url, $logo_url, $_GET['id']]);
             } else {
-                $stmt = $db->prepare("INSERT INTO clients (name, company, website_url, logo_url, testimonial, rating, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$name, $company, $website_url, $logo_url, $testimonial, $rating, $is_featured]);
+                $stmt = $db->prepare("INSERT INTO clients (name, company, website_url, logo_url) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$name, $company, $website_url, $logo_url]);
             }
             header('Location: clients.php');
             exit;
@@ -104,7 +95,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Now include header and sidebar AFTER all redirect logic
 require_once 'includes/header.php';
 require_once 'includes/sidebar.php';
 ?>
@@ -152,47 +142,16 @@ require_once 'includes/sidebar.php';
             </div>
 
             <div>
-                <label for="testimonial" class="block text-sm font-medium text-gray-300 mb-2">Testimonial *</label>
-                <textarea id="testimonial" name="testimonial" rows="4" required
-                          class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all resize-none"
-                          placeholder="Write the client's testimonial here..."><?= htmlspecialchars($client['testimonial'] ?? $_POST['testimonial'] ?? '') ?></textarea>
-            </div>
-
-            <div class="grid sm:grid-cols-2 gap-6">
-                <div>
-                    <label for="rating" class="block text-sm font-medium text-gray-300 mb-2">Rating *</label>
-                    <select id="rating" name="rating" required
-                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all">
-                        <?php for ($i = 5; $i >= 1; $i--): ?>
-                        <option value="<?= $i ?>" <?= ($client['rating'] ?? $_POST['rating'] ?? 5) == $i ? 'selected' : '' ?>>
-                            <?= $i ?> Star<?= $i > 1 ? 's' : '' ?> <?= str_repeat('⭐', $i) ?>
-                        </option>
-                        <?php endfor; ?>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Featured</label>
-                    <label class="flex items-center gap-3 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl cursor-pointer hover:border-purple-500 transition-all">
-                        <input type="checkbox" name="is_featured" value="1" 
-                               <?= ($client['is_featured'] ?? $_POST['is_featured'] ?? 0) ? 'checked' : '' ?>
-                               class="w-5 h-5 rounded bg-gray-700 border-gray-600 text-purple-500 focus:ring-purple-500">
-                        <span class="text-gray-300">Mark as featured</span>
-                    </label>
-                </div>
-            </div>
-
-            <div>
-                <label for="logo" class="block text-sm font-medium text-gray-300 mb-2">Client Photo</label>
+                <label for="logo" class="block text-sm font-medium text-gray-300 mb-2">Client Logo / Photo</label>
                 
                 <?php if ($isEdit && !empty($client['logo_url'])): ?>
                 <div class="mb-4 p-4 bg-gray-800 rounded-xl">
-                    <p class="text-sm text-gray-400 mb-2">Current Photo:</p>
+                    <p class="text-sm text-gray-400 mb-2">Current Image:</p>
                     <?php 
                     $currentImgSrc = (strpos($client['logo_url'], 'http') === 0) ? $client['logo_url'] : '../' . $client['logo_url'];
                     ?>
                     <img src="<?= htmlspecialchars($currentImgSrc) ?>" 
-                         alt="Current client photo"
+                         alt="Current client"
                          class="w-20 h-20 object-cover rounded-full">
                 </div>
                 <?php endif; ?>
@@ -201,15 +160,14 @@ require_once 'includes/sidebar.php';
                     <input type="file" id="logo" name="logo" accept="image/jpeg,image/png,image/gif,image/webp"
                            class="hidden"
                            onchange="previewImage(this)">
-                    <label for="logo" class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-700 rounded-xl cursor-pointer hover:border-purple-500 hover:bg-gray-800/50 transition-all">
+                    <label for="logo" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-700 rounded-xl cursor-pointer hover:border-purple-500 hover:bg-gray-800/50 transition-all">
                         <div id="upload-placeholder" class="flex flex-col items-center">
-                            <svg class="w-10 h-10 text-gray-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-8 h-8 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
-                            <p class="text-gray-400 text-sm">Click to upload photo</p>
-                            <p class="text-gray-500 text-xs mt-1">JPG, PNG, GIF, WebP (max 5MB)</p>
+                            <p class="text-gray-400 text-sm">Click to upload</p>
                         </div>
-                        <img id="image-preview" class="hidden w-40 h-40 object-cover rounded-full" alt="Preview">
+                        <img id="image-preview" class="hidden w-24 h-24 object-cover rounded-full" alt="Preview">
                     </label>
                 </div>
             </div>
