@@ -5,9 +5,11 @@
 $isEdit = isset($_GET['id']) && is_numeric($_GET['id']);
 $pageTitle = $isEdit ? 'Edit Project' : 'Add Project';
 $project = null;
+$errors = [];
 
-require_once 'includes/header.php';
-require_once 'includes/sidebar.php';
+// Include auth for database access and authentication before any output
+require_once 'auth.php';
+Auth::requireLogin();
 
 $db = Database::getInstance()->getConnection();
 
@@ -30,14 +32,13 @@ if ($isEdit) {
     }
 }
 
-// Handle form submission
+// Handle form submission BEFORE any HTML output
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $project_link = trim($_POST['project_link'] ?? '');
     $image_url = $project['image_url'] ?? ''; // Keep existing image if no new upload
 
-    $errors = [];
     if (empty($title)) $errors[] = 'Title is required';
     if (empty($description)) $errors[] = 'Description is required';
 
@@ -100,6 +101,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+// Now include header and sidebar AFTER all redirect logic
+require_once 'includes/header.php';
+require_once 'includes/sidebar.php';
 ?>
 
 <div class="max-w-2xl">
@@ -137,7 +142,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php if ($isEdit && !empty($project['image_url'])): ?>
                 <div class="mb-4 p-4 bg-gray-800 rounded-xl">
                     <p class="text-sm text-gray-400 mb-2">Current Image:</p>
-                    <img src="../<?= htmlspecialchars($project['image_url']) ?>" 
+                    <?php 
+                    $currentImgSrc = (strpos($project['image_url'], 'http') === 0) ? $project['image_url'] : '../' . $project['image_url'];
+                    ?>
+                    <img src="<?= htmlspecialchars($currentImgSrc) ?>" 
                          alt="Current project image"
                          class="w-40 h-28 object-cover rounded-lg">
                 </div>
