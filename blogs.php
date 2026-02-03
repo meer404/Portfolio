@@ -84,7 +84,7 @@ try {
                 <a href="index.php" class="text-2xl font-bold gradient-text">JD</a>
                 
                 <!-- Navigation Links -->
-                <div class="hidden md:flex items-center space-x-8">
+                <div class="hidden md:flex items-center gap-8">
                     <a href="index.php#home" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.home') ?></a>
                     <a href="index.php#about" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.about') ?></a>
                     <a href="index.php#portfolio" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.portfolio') ?></a>
@@ -104,7 +104,7 @@ try {
                 </div>
                 
                 <!-- Mobile Menu Button -->
-                <div class="flex md:hidden items-center space-x-2">
+                <div class="flex md:hidden items-center gap-2">
                     <button id="theme-toggle-mobile" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
                         <svg class="w-5 h-5 moon-icon" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
