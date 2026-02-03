@@ -478,12 +478,7 @@ $seoTwitter = getSetting('social_twitter', '');
                             <div class="relative h-48 overflow-hidden">
                                 <?php 
                                 $imgUrl = $project['image_url'];
-                                if (!empty($imgUrl)) {
-                                    // Check if it's a local file or external URL
-                                    $imgSrc = (strpos($imgUrl, 'http') === 0) ? $imgUrl : $imgUrl;
-                                } else {
-                                    $imgSrc = 'https://via.placeholder.com/600x400?text=No+Image';
-                                }
+                                $imgSrc = !empty($imgUrl) ? $imgUrl : 'https://via.placeholder.com/600x400?text=No+Image';
                                 ?>
                                 <img src="<?= htmlspecialchars($imgSrc) ?>" 
                                      alt="<?= htmlspecialchars(getLocalizedField($project, 'title')) ?>"

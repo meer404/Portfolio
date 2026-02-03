@@ -19,11 +19,7 @@ $blogId = (int)$_GET['id'];
 // Fetch the blog post
 try {
     $db = Database::getInstance();
-    $conn = $db->getConnection();
-    
-    $stmt = $conn->prepare("SELECT * FROM blogs WHERE id = ?");
-    $stmt->execute([$blogId]);
-    $blog = $stmt->fetch();
+    $blog = $db->getBlogById($blogId);
     
     if (!$blog) {
         header('Location: index.php#blog');
@@ -31,12 +27,13 @@ try {
     }
     
     // Get other recent posts for "More Posts" section
+    $conn = $db->getConnection();
     $stmt = $conn->prepare("SELECT * FROM blogs WHERE id != ? ORDER BY created_at DESC LIMIT 3");
     $stmt->execute([$blogId]);
     $relatedPosts = $stmt->fetchAll();
     
     // Get site settings for author info
-    $settings = $db->getAllSettings();
+    $settings = $db->getSettings(['hero_name']);
     $authorName = $settings['hero_name'] ?? 'Author';
     
 } catch (Exception $e) {

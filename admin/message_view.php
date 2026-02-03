@@ -10,13 +10,14 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     exit;
 }
 
-// Include header first to get database connection
-require_once 'includes/header.php';
+// Include auth first to get database connection (but NOT header.php which outputs HTML)
+require_once __DIR__ . '/auth.php';
+Auth::requireLogin();
 
+// Load message BEFORE including header (which outputs HTML)
 $db = Database::getInstance()->getConnection();
-
-// Load message - before sidebar to handle redirects
 $message = null;
+
 try {
     $stmt = $db->prepare("SELECT * FROM messages WHERE id = ?");
     $stmt->execute([$_GET['id']]);
@@ -37,7 +38,8 @@ try {
     exit;
 }
 
-// Now include sidebar - this outputs HTML so no more header() calls after this
+// Now we can include header and sidebar - all redirects are done
+require_once 'includes/header.php';
 require_once 'includes/sidebar.php';
 ?>
 

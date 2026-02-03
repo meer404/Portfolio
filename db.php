@@ -106,6 +106,21 @@ class Database {
     }
 
     /**
+     * Fetch a single blog post by ID
+     */
+    public function getBlogById(int $id): ?array {
+        try {
+            $stmt = $this->connection->prepare("SELECT * FROM blogs WHERE id = ?");
+            $stmt->execute([$id]);
+            $result = $stmt->fetch();
+            return $result ?: null;
+        } catch (PDOException $e) {
+            error_log("Error fetching blog: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Save contact message to database
      */
     public function saveMessage(string $name, string $email, string $subject, string $message): bool {

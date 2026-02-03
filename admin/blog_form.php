@@ -2,7 +2,10 @@
 /**
  * Blog Add/Edit Form with Multi-Language Support
  */
-require_once __DIR__ . '/../db.php';
+
+// Include auth first to ensure authentication before any redirects
+require_once __DIR__ . '/auth.php';
+Auth::requireLogin();
 
 $isEdit = isset($_GET['id']) && is_numeric($_GET['id']);
 $pageTitle = $isEdit ? 'Edit Blog Post' : 'Add Blog Post';
