@@ -1,0 +1,15 @@
+# robots.txt for Portfolio Website
+# Allow all search engine bots to crawl public pages
+
+User-agent: *
+Allow: /
+
+# Disallow admin area
+Disallow: /admin/
+
+# Disallow utility files
+Disallow: /setup_admin.php
+Disallow: /process_contact.php
+
+# Sitemap location
+Sitemap: http://localhost/myportfoue/sitemap.php

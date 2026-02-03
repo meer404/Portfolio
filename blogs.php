@@ -6,13 +6,17 @@
 
 require_once 'lang.php';
 require_once 'db.php';
+require_once 'seo.php';
 
 // Fetch all blogs from database
 try {
     $db = Database::getInstance();
     $blogs = $db->getBlogs();  // Get all blogs
+    $settings = $db->getAllSettings();
+    $authorName = $settings['hero_name'] ?? 'Portfolio';
 } catch (Exception $e) {
     $blogs = [];
+    $authorName = 'Portfolio';
 }
 ?>
 <!DOCTYPE html>
@@ -20,7 +24,13 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Browse all blog posts with thoughts, tutorials, and insights on web development">
+    <?= renderSeoMeta([
+        'title' => t('page.all_blogs_title'),
+        'description' => t('blog.description'),
+        'keywords' => 'blog, articles, web development, tutorials, insights, technology',
+        'type' => 'website',
+        'author' => $authorName,
+    ]) ?>
     <title><?= t('page.all_blogs_title') ?></title>
     
     <!-- Tailwind CSS CDN -->

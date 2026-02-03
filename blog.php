@@ -6,6 +6,7 @@
 
 require_once 'lang.php';
 require_once 'db.php';
+require_once 'seo.php';
 
 // Check if ID is provided
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -34,18 +35,39 @@ try {
     $stmt->execute([$blogId]);
     $relatedPosts = $stmt->fetchAll();
     
+    // Get site settings for author info
+    $settings = $db->getAllSettings();
+    $authorName = $settings['hero_name'] ?? 'Author';
+    
 } catch (Exception $e) {
     header('Location: index.php#blog');
     exit;
 }
+
+// SEO variables
+$seoTitle = getLocalizedField($blog, 'title');
+$seoContent = getLocalizedField($blog, 'content');
+$seoImage = $blog['image_url'] ?? '';
+$seoPublished = date('c', strtotime($blog['created_at']));
+$seoModified = !empty($blog['updated_at']) ? date('c', strtotime($blog['updated_at'])) : $seoPublished;
 ?>
 <!DOCTYPE html>
 <html lang="<?= getCurrentLanguage() ?>" dir="<?= getDir() ?>" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="<?= htmlspecialchars(substr($blog['content'], 0, 160)) ?>">
-    <title><?= t('page.blog_title', ['title' => htmlspecialchars($blog['title'])]) ?></title>
+    <?= renderSeoMeta([
+        'title' => $seoTitle . ' | ' . t('nav.blog'),
+        'description' => substr(strip_tags($seoContent), 0, 160),
+        'keywords' => 'blog, article, web development, tutorial, ' . $seoTitle,
+        'image' => $seoImage,
+        'type' => 'article',
+        'author' => $authorName,
+        'published_time' => $seoPublished,
+        'modified_time' => $seoModified,
+        'section' => 'Blog',
+    ]) ?>
+    <title><?= t('page.blog_title', ['title' => htmlspecialchars($seoTitle)]) ?></title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -291,5 +313,21 @@ try {
             html.classList.remove('dark');
         }
     </script>
+    
+    <!-- Structured Data -->
+    <?= renderBlogPostSchema([
+        'title' => $seoTitle,
+        'description' => $seoContent,
+        'image' => $seoImage,
+        'datePublished' => $seoPublished,
+        'dateModified' => $seoModified,
+        'author' => $authorName,
+        'publisher' => $authorName,
+    ]) ?>
+    <?= renderBreadcrumbSchema([
+        ['name' => t('nav.home'), 'url' => '/index.php'],
+        ['name' => t('nav.blog'), 'url' => '/blogs.php'],
+        ['name' => $seoTitle, 'url' => '/blog.php?id=' . $blogId],
+    ]) ?>
 </body>
 </html>

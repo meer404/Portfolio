@@ -6,13 +6,17 @@
 
 require_once 'lang.php';
 require_once 'db.php';
+require_once 'seo.php';
 
 // Fetch all projects from database
 try {
     $db = Database::getInstance();
     $projects = $db->getProjects();  // Get all projects
+    $settings = $db->getAllSettings();
+    $authorName = $settings['hero_name'] ?? 'Portfolio';
 } catch (Exception $e) {
     $projects = [];
+    $authorName = 'Portfolio';
 }
 ?>
 <!DOCTYPE html>
@@ -20,7 +24,13 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Browse all my portfolio projects showcasing web development skills">
+    <?= renderSeoMeta([
+        'title' => t('page.all_projects_title'),
+        'description' => t('portfolio.all_description'),
+        'keywords' => 'portfolio, projects, web development, web design, full-stack, showcase',
+        'type' => 'website',
+        'author' => $authorName,
+    ]) ?>
     <title><?= t('page.all_projects_title') ?></title>
     
     <!-- Tailwind CSS CDN -->

@@ -6,6 +6,7 @@
 
 require_once 'lang.php';
 require_once 'db.php';
+require_once 'seo.php';
 
 // Check if ID is provided
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -31,18 +32,38 @@ try {
     $stmt->execute([$projectId]);
     $relatedProjects = $stmt->fetchAll();
     
+    // Get site settings for author info
+    $settings = $db->getAllSettings();
+    $authorName = $settings['hero_name'] ?? 'Portfolio';
+    
 } catch (Exception $e) {
     header('Location: projects.php');
     exit;
 }
+
+// SEO variables
+$seoTitle = getLocalizedField($project, 'title');
+$seoDescription = getLocalizedField($project, 'description');
+$seoImage = $project['image_url'] ?? '';
+$seoPublished = date('c', strtotime($project['created_at']));
+$seoTechnologies = $project['technologies'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="<?= getCurrentLanguage() ?>" dir="<?= getDir() ?>" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="<?= htmlspecialchars(substr($project['description'], 0, 160)) ?>">
-    <title><?= t('page.project_title', ['title' => htmlspecialchars($project['title'])]) ?></title>
+    <?= renderSeoMeta([
+        'title' => $seoTitle . ' | ' . t('nav.portfolio'),
+        'description' => $seoDescription,
+        'keywords' => $seoTechnologies . ', project, portfolio, web development',
+        'image' => $seoImage,
+        'type' => 'article',
+        'author' => $authorName,
+        'published_time' => $seoPublished,
+        'section' => 'Portfolio',
+    ]) ?>
+    <title><?= t('page.project_title', ['title' => htmlspecialchars($seoTitle)]) ?></title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -334,5 +355,22 @@ try {
             html.classList.remove('dark');
         }
     </script>
+    
+    <!-- Structured Data -->
+    <?= renderProjectSchema([
+        'title' => $seoTitle,
+        'description' => $seoDescription,
+        'image' => $seoImage,
+        'datePublished' => $seoPublished,
+        'author' => $authorName,
+        'technologies' => $seoTechnologies,
+        'projectUrl' => $project['project_link'] ?? '',
+        'githubUrl' => $project['github_link'] ?? '',
+    ]) ?>
+    <?= renderBreadcrumbSchema([
+        ['name' => t('nav.home'), 'url' => '/index.php'],
+        ['name' => t('nav.portfolio'), 'url' => '/projects.php'],
+        ['name' => $seoTitle, 'url' => '/project.php?id=' . $projectId],
+    ]) ?>
 </body>
 </html>

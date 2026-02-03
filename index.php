@@ -6,6 +6,7 @@
 
 require_once 'lang.php';
 require_once 'db.php';
+require_once 'seo.php';
 
 // Fetch data from database (limited for homepage)
 try {
@@ -32,14 +33,33 @@ function getSetting($key, $default = '') {
     global $settings;
     return $settings[$key] ?? $default;
 }
+
+// SEO variables
+$seoName = getSetting('hero_name', 'John Doe');
+$seoTitle = getSetting('hero_title', 'Full-Stack Developer');
+$seoDescription = getLocalizedSetting('hero_description', 'I craft beautiful, responsive, and user-friendly web applications that solve real-world problems and deliver exceptional user experiences.');
+$seoImage = getSetting('hero_image', '');
+$seoEmail = getSetting('contact_email', '');
+$seoPhone = getSetting('contact_phone', '');
+$seoLocation = getSetting('contact_location', '');
+$seoGithub = getSetting('social_github', '');
+$seoLinkedin = getSetting('social_linkedin', '');
+$seoTwitter = getSetting('social_twitter', '');
 ?>
 <!DOCTYPE html>
 <html lang="<?= getCurrentLanguage() ?>" dir="<?= getDir() ?>" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Professional portfolio showcasing web development projects and skills">
-    <title><?= htmlspecialchars(getSetting('hero_name', 'John Doe')) ?> | <?= htmlspecialchars(getSetting('hero_title', 'Full-Stack Developer')) ?></title>
+    <?= renderSeoMeta([
+        'title' => $seoName . ' | ' . $seoTitle,
+        'description' => $seoDescription,
+        'keywords' => 'web developer, portfolio, full-stack developer, ' . $seoName . ', PHP, JavaScript, React, web design, ' . $seoLocation,
+        'image' => $seoImage,
+        'type' => 'website',
+        'author' => $seoName,
+    ]) ?>
+    <title><?= htmlspecialchars($seoName) ?> | <?= htmlspecialchars($seoTitle) ?></title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -719,5 +739,23 @@ function getSetting($key, $default = '') {
     </footer>
     
     <script src="script.js"></script>
+    
+    <!-- Structured Data -->
+    <?= renderPersonSchema([
+        'name' => $seoName,
+        'jobTitle' => $seoTitle,
+        'description' => $seoDescription,
+        'image' => $seoImage,
+        'email' => $seoEmail,
+        'phone' => $seoPhone,
+        'location' => $seoLocation,
+        'github' => $seoGithub,
+        'linkedin' => $seoLinkedin,
+        'twitter' => $seoTwitter,
+    ]) ?>
+    <?= renderWebsiteSchema([
+        'name' => $seoName . ' - Portfolio',
+        'description' => $seoDescription,
+    ]) ?>
 </body>
 </html>
