@@ -58,14 +58,14 @@ $seoModified = !empty($blog['updated_at']) ? date('c', strtotime($blog['updated_
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?= renderSeoMeta([
         'title' => $seoTitle . ' | ' . t('nav.blog'),
-        'description' => substr(strip_tags($seoContent), 0, 160),
-        'keywords' => 'blog, article, web development, tutorial, ' . $seoTitle,
+        'description' => mb_substr(strip_tags($seoContent), 0, 160, 'UTF-8'),
+        'keywords' => getDefaultKeywords('blog') . ', ' . $seoTitle,
         'image' => $seoImage,
         'type' => 'article',
         'author' => $authorName,
         'published_time' => $seoPublished,
         'modified_time' => $seoModified,
-        'section' => 'Blog',
+        'section' => t('nav.blog'),
     ]) ?>
     <title><?= t('page.blog_title', ['title' => htmlspecialchars($seoTitle)]) ?></title>
     

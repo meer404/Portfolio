@@ -141,4 +141,33 @@ return [
         'blog_title' => ':title | بلۆگ',
         'project_title' => ':title | پۆرتفۆلیۆ',
     ],
+    
+    // SEO - بۆ مەکینەکانی گەڕان
+    'seo' => [
+        // Default meta descriptions
+        'default_description' => 'پۆرتفۆلیۆی پیشەیی کە پڕۆژەکانی گەشەپێدانی وێب و تواناکان پیشان دەدات',
+        'blog_description' => 'بابەتی بلۆگ لەسەر گەشەپێدانی وێب، فێرکاری، و تەکنەلۆژیا بە زمانی کوردی',
+        'portfolio_description' => 'هەموو پڕۆژەکانی پۆرتفۆلیۆم کە تواناکانم لە دیزاینی وێب پیشان دەدات',
+        
+        // Keywords
+        'default_keywords' => 'گەشەپێدەری وێب، پۆرتفۆلیۆ، گەشەپێدەری فول-ستاک، دیزاینی وێب، بەرنامەسازی، کوردستان، عێراق',
+        'blog_keywords' => 'بلۆگ، بابەت، گەشەپێدانی وێب، فێرکاری، تەکنەلۆژیا، کوردی',
+        'portfolio_keywords' => 'پۆرتفۆلیۆ، پڕۆژەکان، گەشەپێدانی وێب، دیزاینی وێب، فول-ستاک',
+        
+        // Structured data labels
+        'person' => 'کەس',
+        'website' => 'ماڵپەڕ',
+        'article' => 'بابەت',
+        'project' => 'پڕۆژە',
+        'breadcrumb_home' => 'سەرەتا',
+        
+        // Social sharing
+        'share_on_twitter' => 'هاوبەشکردن لە تویتەر',
+        'share_on_facebook' => 'هاوبەشکردن لە فەیسبووک',
+        'share_on_linkedin' => 'هاوبەشکردن لە لینکدئین',
+        
+        // Open Graph
+        'og_site_name' => 'پۆرتفۆلیۆ',
+    ],
 ];
+

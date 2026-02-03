@@ -56,12 +56,12 @@ $seoTechnologies = $project['technologies'] ?? '';
     <?= renderSeoMeta([
         'title' => $seoTitle . ' | ' . t('nav.portfolio'),
         'description' => $seoDescription,
-        'keywords' => $seoTechnologies . ', project, portfolio, web development',
+        'keywords' => getDefaultKeywords('portfolio') . ', ' . $seoTechnologies,
         'image' => $seoImage,
         'type' => 'article',
         'author' => $authorName,
         'published_time' => $seoPublished,
-        'section' => 'Portfolio',
+        'section' => t('nav.portfolio'),
     ]) ?>
     <title><?= t('page.project_title', ['title' => htmlspecialchars($seoTitle)]) ?></title>
     

@@ -27,7 +27,7 @@ try {
     <?= renderSeoMeta([
         'title' => t('page.all_blogs_title'),
         'description' => t('blog.description'),
-        'keywords' => 'blog, articles, web development, tutorials, insights, technology',
+        'keywords' => getDefaultKeywords('blog'),
         'type' => 'website',
         'author' => $authorName,
     ]) ?>

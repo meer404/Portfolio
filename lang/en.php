@@ -140,4 +140,32 @@ return [
         'blog_title' => ':title | Blog',
         'project_title' => ':title | Portfolio',
     ],
+    
+    // SEO
+    'seo' => [
+        // Default meta descriptions
+        'default_description' => 'Professional portfolio showcasing web development projects and skills',
+        'blog_description' => 'Blog posts about web development, tutorials, and technology insights',
+        'portfolio_description' => 'All portfolio projects showcasing web design and development skills',
+        
+        // Keywords
+        'default_keywords' => 'web developer, portfolio, full-stack developer, web design, programming',
+        'blog_keywords' => 'blog, articles, web development, tutorials, technology',
+        'portfolio_keywords' => 'portfolio, projects, web development, web design, full-stack',
+        
+        // Structured data labels
+        'person' => 'Person',
+        'website' => 'Website',
+        'article' => 'Article',
+        'project' => 'Project',
+        'breadcrumb_home' => 'Home',
+        
+        // Social sharing
+        'share_on_twitter' => 'Share on Twitter',
+        'share_on_facebook' => 'Share on Facebook',
+        'share_on_linkedin' => 'Share on LinkedIn',
+        
+        // Open Graph
+        'og_site_name' => 'Portfolio',
+    ],
 ];

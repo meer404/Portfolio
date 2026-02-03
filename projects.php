@@ -27,7 +27,7 @@ try {
     <?= renderSeoMeta([
         'title' => t('page.all_projects_title'),
         'description' => t('portfolio.all_description'),
-        'keywords' => 'portfolio, projects, web development, web design, full-stack, showcase',
+        'keywords' => getDefaultKeywords('portfolio'),
         'type' => 'website',
         'author' => $authorName,
     ]) ?>
