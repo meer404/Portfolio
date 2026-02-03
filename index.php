@@ -469,10 +469,9 @@ function getSetting($key, $default = '') {
                                      alt="<?= htmlspecialchars(getLocalizedField($project, 'title')) ?>"
                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                                    <a href="<?= htmlspecialchars($project['project_link']) ?>" 
-                                       target="_blank"
+                                    <a href="project.php?id=<?= $project['id'] ?>" 
                                        class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/30 transition-colors">
-                                        <?= t('portfolio.view_project') ?> →
+                                        <?= t('portfolio.view_details') ?> →
                                     </a>
                                 </div>
                             </div>
