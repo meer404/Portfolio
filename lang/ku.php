@@ -66,6 +66,8 @@ return [
         'view_live' => 'بینینی پڕۆژەی ئۆنلاین',
         'share_project' => 'هاوبەشکردنی ئەم پڕۆژەیە',
         'more_projects' => 'پڕۆژەی زیاتر',
+        'view_github' => 'بینین لە GitHub',
+        'technologies' => 'تەکنەلۆژیاکان',
     ],
     
     // Blog Section - بەشی بلۆگ

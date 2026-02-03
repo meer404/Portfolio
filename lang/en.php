@@ -65,6 +65,8 @@ return [
         'view_live' => 'View Live Project',
         'share_project' => 'Share this project',
         'more_projects' => 'More Projects',
+        'view_github' => 'View on GitHub',
+        'technologies' => 'Technologies',
     ],
     
     // Blog Section

@@ -38,7 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title_ku = trim($_POST['title_ku'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $description_ku = trim($_POST['description_ku'] ?? '');
+    $content = trim($_POST['content'] ?? '');
+    $content_ku = trim($_POST['content_ku'] ?? '');
     $project_link = trim($_POST['project_link'] ?? '');
+    $github_link = trim($_POST['github_link'] ?? '');
+    $technologies = trim($_POST['technologies'] ?? '');
     $image_url = $project['image_url'] ?? ''; // Keep existing image if no new upload
 
     if (empty($title)) $errors[] = 'Title (English) is required';
@@ -88,11 +92,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         try {
             if ($isEdit) {
-                $stmt = $db->prepare("UPDATE projects SET title = ?, title_ku = ?, description = ?, description_ku = ?, image_url = ?, project_link = ? WHERE id = ?");
-                $stmt->execute([$title, $title_ku, $description, $description_ku, $image_url, $project_link, $_GET['id']]);
+                $stmt = $db->prepare("UPDATE projects SET title = ?, title_ku = ?, description = ?, description_ku = ?, content = ?, content_ku = ?, image_url = ?, project_link = ?, github_link = ?, technologies = ? WHERE id = ?");
+                $stmt->execute([$title, $title_ku, $description, $description_ku, $content, $content_ku, $image_url, $project_link, $github_link, $technologies, $_GET['id']]);
             } else {
-                $stmt = $db->prepare("INSERT INTO projects (title, title_ku, description, description_ku, image_url, project_link) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$title, $title_ku, $description, $description_ku, $image_url, $project_link]);
+                $stmt = $db->prepare("INSERT INTO projects (title, title_ku, description, description_ku, content, content_ku, image_url, project_link, github_link, technologies) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$title, $title_ku, $description, $description_ku, $content, $content_ku, $image_url, $project_link, $github_link, $technologies]);
             }
             header('Location: projects.php');
             exit;
@@ -151,9 +155,17 @@ require_once 'includes/sidebar.php';
                 </div>
 
                 <div>
-                    <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Description (English) *</label>
-                    <textarea id="description" name="description" rows="4" required
+                    <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Short Description (English) *</label>
+                    <textarea id="description" name="description" rows="3" required
+                              placeholder="Brief summary shown in project cards"
                               class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all resize-none"><?= htmlspecialchars($project['description'] ?? $_POST['description'] ?? '') ?></textarea>
+                </div>
+
+                <div>
+                    <label for="content" class="block text-sm font-medium text-gray-300 mb-2">Full Content (English)</label>
+                    <textarea id="content" name="content" rows="8"
+                              placeholder="Detailed project write-up, features, challenges, etc."
+                              class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all resize-none"><?= htmlspecialchars($project['content'] ?? $_POST['content'] ?? '') ?></textarea>
                 </div>
             </div>
 
@@ -168,10 +180,19 @@ require_once 'includes/sidebar.php';
                 </div>
 
                 <div>
-                    <label for="description_ku" class="block text-sm font-medium text-gray-300 mb-2">وەسف (کوردی)</label>
-                    <textarea id="description_ku" name="description_ku" rows="4"
+                    <label for="description_ku" class="block text-sm font-medium text-gray-300 mb-2">وەسفی کورت (کوردی)</label>
+                    <textarea id="description_ku" name="description_ku" rows="3"
+                              placeholder="کورتەی پڕۆژە"
                               class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all resize-none"
                               style="font-family: 'Noto Sans Arabic', sans-serif;"><?= htmlspecialchars($project['description_ku'] ?? $_POST['description_ku'] ?? '') ?></textarea>
+                </div>
+
+                <div>
+                    <label for="content_ku" class="block text-sm font-medium text-gray-300 mb-2">ناوەڕۆکی تەواو (کوردی)</label>
+                    <textarea id="content_ku" name="content_ku" rows="8"
+                              placeholder="شرۆڤەی تەواوی پڕۆژە"
+                              class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all resize-none"
+                              style="font-family: 'Noto Sans Arabic', sans-serif;"><?= htmlspecialchars($project['content_ku'] ?? $_POST['content_ku'] ?? '') ?></textarea>
                 </div>
             </div>
 
@@ -208,13 +229,32 @@ require_once 'includes/sidebar.php';
                 </div>
             </div>
 
-            <!-- Project Link (shared) -->
-            <div dir="ltr">
-                <label for="project_link" class="block text-sm font-medium text-gray-300 mb-2">Project Link</label>
-                <input type="url" id="project_link" name="project_link"
-                       class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
-                       placeholder="https://github.com/yourproject"
-                       value="<?= htmlspecialchars($project['project_link'] ?? $_POST['project_link'] ?? '') ?>">
+            <!-- Project Links (shared) -->
+            <div dir="ltr" class="space-y-4">
+                <div>
+                    <label for="project_link" class="block text-sm font-medium text-gray-300 mb-2">Live Project URL</label>
+                    <input type="url" id="project_link" name="project_link"
+                           class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                           placeholder="https://example.com"
+                           value="<?= htmlspecialchars($project['project_link'] ?? $_POST['project_link'] ?? '') ?>">
+                </div>
+
+                <div>
+                    <label for="github_link" class="block text-sm font-medium text-gray-300 mb-2">GitHub Repository</label>
+                    <input type="url" id="github_link" name="github_link"
+                           class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                           placeholder="https://github.com/username/project"
+                           value="<?= htmlspecialchars($project['github_link'] ?? $_POST['github_link'] ?? '') ?>">
+                </div>
+
+                <div>
+                    <label for="technologies" class="block text-sm font-medium text-gray-300 mb-2">Technologies Used</label>
+                    <input type="text" id="technologies" name="technologies"
+                           class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                           placeholder="PHP, MySQL, Tailwind CSS, JavaScript"
+                           value="<?= htmlspecialchars($project['technologies'] ?? $_POST['technologies'] ?? '') ?>">
+                    <p class="text-gray-500 text-xs mt-1">Comma-separated list of technologies</p>
+                </div>
             </div>
 
             <div class="flex gap-4 pt-4">
