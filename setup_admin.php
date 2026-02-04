@@ -7,9 +7,9 @@
 
 require_once __DIR__ . '/db.php';
 
-$username = 'MirMohammedRashid';
-$password = 'Mira19$==';
-$email = 'meermohammed80@gmail.com';
+$username = 'Admin';
+$password = 'admin123';
+$email = 'admin@gmail.com';
 
 // Generate proper bcrypt hash
 $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
