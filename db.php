@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/config.php';
 /**
  * Database Connection Class
  * Uses PDO for secure database operations with prepared statements
@@ -8,11 +9,11 @@ class Database {
     private static ?Database $instance = null;
     private ?PDO $connection = null;
     
-    private string $host = 'localhost';
-    private string $dbname = 'portfolio_db';
-    private string $username = 'root';
-    private string $password = '';
-    private string $charset = 'utf8mb4';
+    private string $host = DB_HOST;
+    private string $dbname = DB_NAME;
+    private string $username = DB_USER;
+    private string $password = DB_PASS;
+    private string $charset = DB_CHARSET;
 
     /**
      * Private constructor for singleton pattern
