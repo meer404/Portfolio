@@ -10,6 +10,7 @@ $errors = [];
 // Include auth for database access and authentication before any output
 require_once 'auth.php';
 Auth::requireLogin();
+require_once 'includes/image_helper.php';
 
 $db = Database::getInstance()->getConnection();
 
@@ -44,38 +45,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle image upload
     if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
-        $file = $_FILES['logo'];
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $maxSize = 5 * 1024 * 1024; // 5MB
+        try {
+            $newFilename = ImageHelper::processUpload($_FILES['logo'], $uploadDir, 'client_');
 
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
-
-        if (!in_array($mimeType, $allowedTypes)) {
-            $errors[] = 'Invalid image type. Allowed: JPG, PNG, GIF, WebP';
-        } elseif ($file['size'] > $maxSize) {
-            $errors[] = 'Image size must be less than 5MB';
-        } else {
-            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $newFilename = uniqid('client_') . '.' . strtolower($extension);
-            $uploadPath = $uploadDir . $newFilename;
-
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-
-            if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
-                if ($isEdit && !empty($client['logo_url']) && strpos($client['logo_url'], 'uploads/clients/') !== false) {
-                    $oldImagePath = '../' . $client['logo_url'];
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
-                    }
+            if ($isEdit && !empty($client['logo_url']) && strpos($client['logo_url'], 'uploads/clients/') !== false) {
+                $oldImagePath = '../' . $client['logo_url'];
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
                 }
-                $logo_url = 'uploads/clients/' . $newFilename;
-            } else {
-                $errors[] = 'Failed to upload image';
             }
+            $logo_url = 'uploads/clients/' . $newFilename;
+        } catch (Exception $e) {
+            $errors[] = $e->getMessage();
         }
     }
 

@@ -6,6 +6,7 @@
 // Include auth first to ensure authentication before any redirects
 require_once __DIR__ . '/auth.php';
 Auth::requireLogin();
+require_once 'includes/image_helper.php';
 
 $isEdit = isset($_GET['id']) && is_numeric($_GET['id']);
 $pageTitle = $isEdit ? 'Edit Blog Post' : 'Add Blog Post';
@@ -43,35 +44,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle image upload
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $maxSize = 5 * 1024 * 1024; // 5MB
-
-        if (!in_array($_FILES['image']['type'], $allowedTypes)) {
-            $errors[] = 'Invalid image type. Allowed: JPEG, PNG, GIF, WebP';
-        } elseif ($_FILES['image']['size'] > $maxSize) {
-            $errors[] = 'Image size must be less than 5MB';
-        } else {
+        try {
+            // Upload directory
             $uploadDir = '../uploads/blogs/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
+            $newFilename = ImageHelper::processUpload($_FILES['image'], $uploadDir, 'blog_');
             
-            $extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-            $filename = uniqid('blog_') . '.' . $extension;
-            $filepath = $uploadDir . $filename;
-            
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $filepath)) {
-                // Delete old image if editing
-                if ($isEdit && !empty($blog['image_url']) && strpos($blog['image_url'], 'uploads/') !== false) {
-                    $oldFile = '../' . $blog['image_url'];
-                    if (file_exists($oldFile)) {
-                        unlink($oldFile);
-                    }
+            // Delete old image if editing
+            if ($isEdit && !empty($blog['image_url']) && strpos($blog['image_url'], 'uploads/') !== false) {
+                $oldFile = '../' . $blog['image_url'];
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
                 }
-                $image_url = 'uploads/blogs/' . $filename;
-            } else {
-                $errors[] = 'Failed to upload image';
             }
+            $image_url = 'uploads/blogs/' . $newFilename;
+        } catch (Exception $e) {
+            $errors[] = $e->getMessage();
         }
     }
 
