@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Mir.Codes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 h-screen flex flex-col items-center justify-center text-center px-4">
+    <div class="max-w-md">
+        <svg class="w-24 h-24 mx-auto text-gray-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19a2 2 0 002 2 2 2 0 002-2M13 13h.01"></path>
+        </svg>
+        <h1 class="text-3xl font-bold mb-4">You are Offline</h1>
+        <p class="text-gray-600 dark:text-gray-400 mb-8">
+            It seems you have lost your internet connection. We can't load this page right now.
+        </p>
+        <a href="/" class="inline-block bg-purple-600 text-white px-8 py-3 rounded-full font-medium hover:bg-purple-700 transition-colors">
+            Go Home
+        </a>
+    </div>
+</body>
+</html>
