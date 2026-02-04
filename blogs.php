@@ -11,6 +11,7 @@ require_once 'seo.php';
 // Fetch all blogs from database
 try {
     $db = Database::getInstance();
+    $db->recordVisit('site');
     $blogs = $db->getBlogs();  // Get all blogs
     $settings = $db->getAllSettings();
     $authorName = $settings['hero_name'] ?? 'Portfolio';

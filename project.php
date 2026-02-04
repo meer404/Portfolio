@@ -21,6 +21,11 @@ try {
     $db = Database::getInstance();
     $project = $db->getProjectById($projectId);
     
+    if ($project) {
+        $db->recordVisit('project', $projectId);
+        $db->recordVisit('site');
+    }
+    
     if (!$project) {
         header('Location: projects.php');
         exit;

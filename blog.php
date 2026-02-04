@@ -21,6 +21,11 @@ try {
     $db = Database::getInstance();
     $blog = $db->getBlogById($blogId);
     
+    if ($blog) {
+        $db->recordVisit('blog', $blogId);
+        $db->recordVisit('site');
+    }
+    
     if (!$blog) {
         header('Location: index.php#blog');
         exit;

@@ -11,6 +11,7 @@ require_once 'seo.php';
 // Fetch all projects from database
 try {
     $db = Database::getInstance();
+    $db->recordVisit('site');
     $projects = $db->getProjects();  // Get all projects
     $settings = $db->getAllSettings();
     $authorName = $settings['hero_name'] ?? 'Portfolio';

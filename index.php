@@ -11,6 +11,7 @@ require_once 'seo.php';
 // Fetch data from database (limited for homepage)
 try {
     $db = Database::getInstance();
+    $db->recordVisit('site');
     $projects = $db->getProjects(6);  // Only show 6 projects
     $blogs = $db->getBlogs(4);        // Only show 4 blogs
     $clients = $db->getClients(5);    // Get client testimonials

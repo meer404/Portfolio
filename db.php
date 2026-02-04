@@ -59,9 +59,9 @@ class Database {
     /**
      * Fetch all projects from database
      */
-    public function getProjects(?int $limit = null): array {
+    public function getProjects(?int $limit = null, bool $orderByViews = false): array {
         try {
-            $sql = "SELECT * FROM projects ORDER BY created_at DESC";
+            $sql = "SELECT * FROM projects ORDER BY " . ($orderByViews ? "views DESC, " : "") . "created_at DESC";
             if ($limit !== null) {
                 $sql .= " LIMIT " . (int)$limit;
             }
@@ -91,9 +91,9 @@ class Database {
     /**
      * Fetch all blog posts from database
      */
-    public function getBlogs(?int $limit = null): array {
+    public function getBlogs(?int $limit = null, bool $orderByViews = false): array {
         try {
-            $sql = "SELECT * FROM blogs ORDER BY created_at DESC";
+            $sql = "SELECT * FROM blogs ORDER BY " . ($orderByViews ? "views DESC, " : "") . "created_at DESC";
             if ($limit !== null) {
                 $sql .= " LIMIT " . (int)$limit;
             }
@@ -292,6 +292,66 @@ class Database {
         } catch (PDOException $e) {
             error_log("Error fetching client: " . $e->getMessage());
             return null;
+        }
+    }
+
+    /**
+     * Record a visit
+     * @param string $type 'site', 'project', or 'blog'
+     * @param int|null $id ID of the project or blog (required if type is not 'site')
+     */
+    public function recordVisit(string $type, ?int $id = null): bool {
+        try {
+            if ($type === 'site') {
+                $today = date('Y-m-d');
+                $stmt = $this->connection->prepare(
+                    "INSERT INTO daily_visits (visit_date, visit_count) VALUES (?, 1)
+                     ON DUPLICATE KEY UPDATE visit_count = visit_count + 1"
+                );
+                return $stmt->execute([$today]);
+            } elseif ($type === 'project' && $id) {
+                $stmt = $this->connection->prepare("UPDATE projects SET views = views + 1 WHERE id = ?");
+                return $stmt->execute([$id]);
+            } elseif ($type === 'blog' && $id) {
+                $stmt = $this->connection->prepare("UPDATE blogs SET views = views + 1 WHERE id = ?");
+                return $stmt->execute([$id]);
+            }
+            return false;
+        } catch (PDOException $e) {
+            error_log("Error recording visit: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Get daily visits for analytics
+     */
+    public function getDailyVisits(int $days = 7): array {
+        try {
+            $stmt = $this->connection->prepare(
+                "SELECT * FROM daily_visits ORDER BY visit_date DESC LIMIT ?"
+            );
+            $stmt->bindValue(1, $days, PDO::PARAM_INT);
+            $stmt->execute();
+            return array_reverse($stmt->fetchAll());
+        } catch (PDOException $e) {
+            error_log("Error fetching daily visits: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Get total visits today
+     */
+    public function getVisitsToday(): int {
+        try {
+            $today = date('Y-m-d');
+            $stmt = $this->connection->prepare("SELECT visit_count FROM daily_visits WHERE visit_date = ?");
+            $stmt->execute([$today]);
+            return (int)$stmt->fetchColumn();
+        } catch (PDOException $e) {
+            error_log("Error fetching visits today: " . $e->getMessage());
+            return 0;
         }
     }
 
