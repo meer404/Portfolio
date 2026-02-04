@@ -7,7 +7,7 @@
 
 require_once __DIR__ . '/db.php';
 
-$username = 'MirMohammed';
+$username = 'MirMohammedRashid';
 $password = 'Mira19$==';
 $email = 'meermohammed80@gmail.com';
 
