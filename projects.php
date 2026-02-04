@@ -27,6 +27,13 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#7c3aed">
+
+    <!-- iOS Support -->
+    <link rel="apple-touch-icon" href="uploads/logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mir.Codes">
+
     <?= renderSeoMeta([
         'title' => t('page.all_projects_title'),
         'description' => t('portfolio.all_description'),

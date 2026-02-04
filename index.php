@@ -54,6 +54,13 @@ $seoTwitter = getSetting('social_twitter', '');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#7c3aed">
+    
+    <!-- iOS Support -->
+    <link rel="apple-touch-icon" href="uploads/logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mir.Codes">
+    
     <?= renderSeoMeta([
         'title' => $seoName . ' | ' . $seoTitle,
         'description' => $seoDescription,
@@ -173,6 +180,14 @@ $seoTwitter = getSetting('social_twitter', '');
                     <a href="<?= langUrl(getOtherLanguage()) ?>" class="px-3 py-1 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors">
                         <?= t('language.switch') ?>
                     </a>
+
+                    <!-- PWA Install Button (Desktop) -->
+                    <button id="install-btn" class="hidden px-3 py-1 rounded-lg bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 text-sm font-medium hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        <?= t('nav.install', 'Install App') ?>
+                    </button>
                     
                     <!-- Theme Toggle -->
                     <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
@@ -196,6 +211,14 @@ $seoTwitter = getSetting('social_twitter', '');
                     <a href="<?= langUrl(getOtherLanguage()) ?>" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 font-medium">
                         <?= t('language.switch') ?>
                     </a>
+                    
+                    <!-- PWA Install Button (Mobile) -->
+                    <button id="install-btn-mobile" class="hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-purple-600 dark:text-purple-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                    </button>
+
                     <button id="theme-toggle-mobile" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
                         <svg class="w-5 h-5 sun-icon hidden" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>

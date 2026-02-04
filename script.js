@@ -380,3 +380,87 @@ if ('serviceWorker' in navigator) {
             });
     });
 }
+
+// PWA Install Prompt
+let deferredPrompt;
+const installBtn = document.getElementById('install-btn');
+const installBtnMobile = document.getElementById('install-btn-mobile');
+
+// Detect iOS
+const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+
+// Show install button on iOS if not installed
+if (isIos && !isStandalone) {
+    if (installBtn) installBtn.classList.remove('hidden');
+    if (installBtnMobile) installBtnMobile.classList.remove('hidden');
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    // Update UI to notify the user they can add to home screen
+    if (installBtn) installBtn.classList.remove('hidden');
+    if (installBtnMobile) installBtnMobile.classList.remove('hidden');
+
+    console.log('beforeinstallprompt fired');
+});
+
+function showIosInstallInstructions() {
+    const div = document.createElement('div');
+    div.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4';
+    div.innerHTML = `
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-sm w-full shadow-2xl relative animate-fade-in">
+            <button onclick="this.closest('.fixed').remove()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Install App</h3>
+            <p class="mb-4 text-gray-600 dark:text-gray-300">To install this app on your iPhone or iPad:</p>
+            <ol class="list-decimal list-inside space-y-3 text-gray-600 dark:text-gray-300 mb-4 text-sm">
+                <li class="flex items-center gap-2">Tap the <strong>Share</strong> button <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg></li>
+                <li class="flex items-center gap-2">Scroll down and tap <strong>Add to Home Screen</strong> <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg></li>
+            </ol>
+        </div>
+    `;
+    document.body.appendChild(div);
+}
+
+function handleInstallClick() {
+    // If iOS and no deferred prompt, show instructions
+    if (isIos && !deferredPrompt) {
+        showIosInstallInstructions();
+        return;
+    }
+
+    if (installBtn) installBtn.classList.add('hidden');
+    if (installBtnMobile) installBtnMobile.classList.add('hidden');
+
+    // Show the prompt
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the A2HS prompt');
+            } else {
+                console.log('User dismissed the A2HS prompt');
+            }
+            deferredPrompt = null;
+        });
+    }
+}
+
+if (installBtn) {
+    installBtn.addEventListener('click', handleInstallClick);
+}
+
+if (installBtnMobile) {
+    installBtnMobile.addEventListener('click', handleInstallClick);
+}
+
+window.addEventListener('appinstalled', (evt) => {
+    // Log install to analytics
+    console.log('INSTALL: Success');
+});
