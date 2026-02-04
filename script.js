@@ -104,7 +104,7 @@ function initApp() {
             const formData = new FormData(contactForm);
 
             try {
-                const response = await fetch('process_contact.php', {
+                const response = await fetch('process_contact', {
                     method: 'POST',
                     body: formData
                 });
