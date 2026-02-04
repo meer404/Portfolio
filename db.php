@@ -244,6 +244,43 @@ class Database {
     }
 
     /**
+     * Search across projects and blogs
+     */
+    public function search(string $query, int $limit = 10): array {
+        try {
+            $results = ['projects' => [], 'blogs' => []];
+            $searchTerm = '%' . $query . '%';
+            
+            // Search projects
+            $stmt = $this->connection->prepare(
+                "SELECT id, title, title_ku, description, description_ku, image_url, 'project' as type 
+                 FROM projects 
+                 WHERE title LIKE ? OR title_ku LIKE ? OR description LIKE ? OR description_ku LIKE ?
+                 ORDER BY created_at DESC 
+                 LIMIT ?"
+            );
+            $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $searchTerm, $limit]);
+            $results['projects'] = $stmt->fetchAll();
+            
+            // Search blogs
+            $stmt = $this->connection->prepare(
+                "SELECT id, title, title_ku, content, content_ku, image_url, 'blog' as type 
+                 FROM blogs 
+                 WHERE title LIKE ? OR title_ku LIKE ? OR content LIKE ? OR content_ku LIKE ?
+                 ORDER BY created_at DESC 
+                 LIMIT ?"
+            );
+            $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $searchTerm, $limit]);
+            $results['blogs'] = $stmt->fetchAll();
+            
+            return $results;
+        } catch (PDOException $e) {
+            error_log("Error searching: " . $e->getMessage());
+            return ['projects' => [], 'blogs' => []];
+        }
+    }
+
+    /**
      * Fetch a single client by ID
      */
     public function getClientById(int $id): ?array {

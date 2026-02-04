@@ -105,6 +105,13 @@ try {
                     <a href="index.php#blog" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.blog') ?></a>
                     <a href="index.php#contact" class="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"><?= t('nav.contact') ?></a>
                     
+                    <!-- Search Button -->
+                    <button id="search-btn" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" title="<?= t('search.hint') ?>">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                    
                     <!-- Language Switcher -->
                     <a href="<?= langUrl(getOtherLanguage()) ?>" class="px-3 py-1 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors">
                         <?= t('language.switch') ?>
@@ -123,6 +130,12 @@ try {
                 
                 <!-- Mobile Menu Button -->
                 <div class="flex md:hidden items-center gap-2">
+                    <!-- Mobile Search Button -->
+                    <button id="search-btn-mobile" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
                     <a href="<?= langUrl(getOtherLanguage()) ?>" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 font-medium">
                         <?= t('language.switch') ?>
                     </a>
@@ -225,6 +238,31 @@ try {
             </div>
         </div>
     </section>
+
+    <!-- Search Modal -->
+    <div id="search-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="search-overlay"></div>
+        <div class="relative flex items-start justify-center pt-20 px-4 min-h-screen">
+            <div class="w-full max-w-2xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-800">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input type="text" id="search-input" class="flex-1 bg-transparent text-lg outline-none placeholder-gray-400" placeholder="<?= t('search.placeholder') ?>">
+                        <button id="search-close" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div id="search-results" class="max-h-96 overflow-y-auto p-4" data-no-results="<?= t('search.no_results') ?>" data-projects-label="<?= t('search.projects') ?>" data-blogs-label="<?= t('search.blogs') ?>">
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-8"><?= t('search.hint') ?></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="py-12 bg-gray-100 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">

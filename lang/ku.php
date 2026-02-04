@@ -169,5 +169,15 @@ return [
         // Open Graph
         'og_site_name' => 'پۆرتفۆلیۆ',
     ],
+    
+    // Search - گەڕان
+    'search' => [
+        'placeholder' => 'گەڕان لە پڕۆژە و بابەتەکان...',
+        'no_results' => 'هیچ ئەنجامێک نەدۆزرایەوە',
+        'projects' => 'پڕۆژەکان',
+        'blogs' => 'بابەتەکان',
+        'hint' => 'Ctrl+K بۆ گەڕان',
+        'close' => 'داخستن',
+    ],
 ];
 

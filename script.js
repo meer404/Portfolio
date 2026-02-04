@@ -3,7 +3,9 @@
  * Handles mobile menu, dark mode, smooth scroll, and contact form
  */
 
-document.addEventListener('DOMContentLoaded', function() {
+function initApp() {
+    console.log('Portfolio App Initializing...');
+
     // Mobile Menu Toggle
     const menuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -11,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeIcon = document.getElementById('close-icon');
 
     if (menuBtn && mobileMenu) {
-        menuBtn.addEventListener('click', function() {
+        menuBtn.addEventListener('click', function () {
             mobileMenu.classList.toggle('hidden');
             menuIcon.classList.toggle('hidden');
             closeIcon.classList.toggle('hidden');
@@ -46,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateThemeIcon(isDark) {
         const sunIcons = document.querySelectorAll('.sun-icon');
         const moonIcons = document.querySelectorAll('.moon-icon');
-        
+
         sunIcons.forEach(icon => icon.classList.toggle('hidden', !isDark));
         moonIcons.forEach(icon => icon.classList.toggle('hidden', isDark));
     }
@@ -60,20 +62,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Smooth Scrolling for Navigation Links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-            
-            if (targetElement) {
-                const headerOffset = 80;
-                const elementPosition = targetElement.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            try {
+                const targetElement = document.querySelector(targetId);
 
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                });
+                if (targetElement) {
+                    const headerOffset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            } catch (err) {
+                // Ignore
             }
         });
     });
@@ -86,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnLoader = document.getElementById('btn-loader');
 
     if (contactForm) {
-        contactForm.addEventListener('submit', async function(e) {
+        contactForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             // Show loading state
@@ -130,14 +136,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Navbar background on scroll
     const navbar = document.getElementById('navbar');
-    
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 50) {
-            navbar.classList.add('bg-opacity-95', 'shadow-lg');
-        } else {
-            navbar.classList.remove('bg-opacity-95', 'shadow-lg');
-        }
-    });
+    if (navbar) {
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-opacity-95', 'shadow-lg');
+            } else {
+                navbar.classList.remove('bg-opacity-95', 'shadow-lg');
+            }
+        });
+    }
 
     // Animate elements on scroll
     const observerOptions = {
@@ -157,4 +164,206 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.animate-on-scroll').forEach(el => {
         observer.observe(el);
     });
-});
+
+    // === Search Functionality ===
+    const searchModal = document.getElementById('search-modal');
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    const searchBtn = document.getElementById('search-btn');
+    const searchBtnMobile = document.getElementById('search-btn-mobile');
+    const searchClose = document.getElementById('search-close');
+    const searchOverlay = document.getElementById('search-overlay');
+
+    console.log('Search Elements Check:', {
+        modal: !!searchModal,
+        input: !!searchInput,
+        btn: !!searchBtn,
+        btnMobile: !!searchBtnMobile
+    });
+
+    // Get translation strings from data attributes or defaults
+    const noResultsText = searchResults?.dataset.noResults || 'No results found';
+    const projectsText = searchResults?.dataset.projectsLabel || 'Projects';
+    const blogsText = searchResults?.dataset.blogsLabel || 'Blog Posts';
+
+    let searchTimeout = null;
+
+    function openSearchModal() {
+        console.log('Opening search modal');
+        if (searchModal) {
+            searchModal.classList.remove('hidden');
+            setTimeout(() => {
+                searchInput?.focus();
+            }, 50);
+            document.body.style.overflow = 'hidden';
+        } else {
+            console.error('Search modal not found');
+        }
+    }
+
+    function closeSearchModal() {
+        console.log('Closing search modal');
+        if (searchModal) {
+            searchModal.classList.add('hidden');
+            document.body.style.overflow = '';
+            if (searchInput) searchInput.value = '';
+            if (searchResults) {
+                searchResults.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center py-8">Ctrl+K to search</p>';
+            }
+        }
+    }
+
+    // Open modal handlers
+    if (searchBtn) {
+        searchBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openSearchModal();
+        });
+    } else {
+        console.warn('Desktop search button not found');
+    }
+
+    if (searchBtnMobile) {
+        searchBtnMobile.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openSearchModal();
+        });
+    }
+
+    // Close modal handlers
+    if (searchClose) {
+        searchClose.addEventListener('click', closeSearchModal);
+    }
+    if (searchOverlay) {
+        searchOverlay.addEventListener('click', closeSearchModal);
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function (e) {
+        // Ctrl+K or Cmd+K to open
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            if (searchModal?.classList.contains('hidden')) {
+                openSearchModal();
+            } else {
+                closeSearchModal();
+            }
+        }
+        // Escape to close
+        if (e.key === 'Escape' && searchModal && !searchModal.classList.contains('hidden')) {
+            closeSearchModal();
+        }
+    });
+
+    // Search input handler with debounce
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                searchResults.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center py-8">Type at least 2 characters to search</p>';
+                return;
+            }
+
+            searchResults.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center py-8">Searching...</p>';
+
+            searchTimeout = setTimeout(() => {
+                performSearch(query);
+            }, 300);
+        });
+    }
+
+    async function performSearch(query) {
+        try {
+            console.log('Performing search for:', query);
+            const response = await fetch(`search.php?q=${encodeURIComponent(query)}`);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+            renderSearchResults(data);
+        } catch (error) {
+            console.error('Search error:', error);
+            if (searchResults) {
+                searchResults.innerHTML = '<p class="text-red-500 text-center py-8">Search failed. Please try again.</p>';
+            }
+        }
+    }
+
+    function renderSearchResults(data) {
+        const hasProjects = data.projects && data.projects.length > 0;
+        const hasBlogs = data.blogs && data.blogs.length > 0;
+
+        if (!hasProjects && !hasBlogs) {
+            searchResults.innerHTML = `<p class="text-gray-500 dark:text-gray-400 text-center py-8">${noResultsText}</p>`;
+            return;
+        }
+
+        let html = '';
+
+        // Projects section
+        if (hasProjects) {
+            html += `<div class="mb-6">
+                <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">${projectsText}</h3>
+                <div class="space-y-2">`;
+
+            data.projects.forEach(project => {
+                html += `
+                    <a href="${project.url}" class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <div class="w-12 h-12 rounded-lg bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-medium text-gray-900 dark:text-white truncate">${escapeHtml(project.title)}</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 truncate">${escapeHtml(project.description || '')}</p>
+                        </div>
+                    </a>`;
+            });
+
+            html += '</div></div>';
+        }
+
+        // Blogs section
+        if (hasBlogs) {
+            html += `<div>
+                <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">${blogsText}</h3>
+                <div class="space-y-2">`;
+
+            data.blogs.forEach(blog => {
+                html += `
+                    <a href="${blog.url}" class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <div class="w-12 h-12 rounded-lg bg-pink-600/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-medium text-gray-900 dark:text-white truncate">${escapeHtml(blog.title)}</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 truncate">${escapeHtml(blog.excerpt || '')}</p>
+                        </div>
+                    </a>`;
+            });
+
+            html += '</div></div>';
+        }
+
+        searchResults.innerHTML = html;
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+}
+
+// Robust initialization handling that works even if DOMContentLoaded has already fired
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}

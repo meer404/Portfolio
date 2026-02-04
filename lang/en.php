@@ -168,4 +168,14 @@ return [
         // Open Graph
         'og_site_name' => 'Portfolio',
     ],
+    
+    // Search
+    'search' => [
+        'placeholder' => 'Search projects and blogs...',
+        'no_results' => 'No results found',
+        'projects' => 'Projects',
+        'blogs' => 'Blog Posts',
+        'hint' => 'Ctrl+K to search',
+        'close' => 'Close',
+    ],
 ];
