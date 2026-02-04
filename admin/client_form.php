@@ -35,44 +35,48 @@ if ($isEdit) {
 
 // Handle form submission BEFORE any HTML output
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $company = trim($_POST['company'] ?? '');
-    $company_ku = trim($_POST['company_ku'] ?? '');
-    $website_url = trim($_POST['website_url'] ?? '');
-    $logo_url = $client['logo_url'] ?? '';
+    if (!CSRF::verifyToken($_POST['csrf_token'] ?? null)) {
+        $errors[] = 'Session expired or invalid request. Please reload and try again.';
+    } else {
+        $name = trim($_POST['name'] ?? '');
+        $company = trim($_POST['company'] ?? '');
+        $company_ku = trim($_POST['company_ku'] ?? '');
+        $website_url = trim($_POST['website_url'] ?? '');
+        $logo_url = $client['logo_url'] ?? '';
 
-    if (empty($name)) $errors[] = 'Name is required';
+        if (empty($name)) $errors[] = 'Name is required';
 
-    // Handle image upload
-    if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
-        try {
-            $newFilename = ImageHelper::processUpload($_FILES['logo'], $uploadDir, 'client_');
+        // Handle image upload
+        if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
+            try {
+                $newFilename = ImageHelper::processUpload($_FILES['logo'], $uploadDir, 'client_');
 
-            if ($isEdit && !empty($client['logo_url']) && strpos($client['logo_url'], 'uploads/clients/') !== false) {
-                $oldImagePath = '../' . $client['logo_url'];
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
+                if ($isEdit && !empty($client['logo_url']) && strpos($client['logo_url'], 'uploads/clients/') !== false) {
+                    $oldImagePath = '../' . $client['logo_url'];
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
                 }
+                $logo_url = 'uploads/clients/' . $newFilename;
+            } catch (Exception $e) {
+                $errors[] = $e->getMessage();
             }
-            $logo_url = 'uploads/clients/' . $newFilename;
-        } catch (Exception $e) {
-            $errors[] = $e->getMessage();
         }
-    }
 
-    if (empty($errors)) {
-        try {
-            if ($isEdit) {
-                $stmt = $db->prepare("UPDATE clients SET name = ?, company = ?, company_ku = ?, website_url = ?, logo_url = ? WHERE id = ?");
-                $stmt->execute([$name, $company, $company_ku, $website_url, $logo_url, $_GET['id']]);
-            } else {
-                $stmt = $db->prepare("INSERT INTO clients (name, company, company_ku, website_url, logo_url) VALUES (?, ?, ?, ?, ?)");
-                $stmt->execute([$name, $company, $company_ku, $website_url, $logo_url]);
+        if (empty($errors)) {
+            try {
+                if ($isEdit) {
+                    $stmt = $db->prepare("UPDATE clients SET name = ?, company = ?, company_ku = ?, website_url = ?, logo_url = ? WHERE id = ?");
+                    $stmt->execute([$name, $company, $company_ku, $website_url, $logo_url, $_GET['id']]);
+                } else {
+                    $stmt = $db->prepare("INSERT INTO clients (name, company, company_ku, website_url, logo_url) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->execute([$name, $company, $company_ku, $website_url, $logo_url]);
+                }
+                header('Location: clients.php');
+                exit;
+            } catch (Exception $e) {
+                $errors[] = 'Failed to save client';
             }
-            header('Location: clients.php');
-            exit;
-        } catch (Exception $e) {
-            $errors[] = 'Failed to save client';
         }
     }
 }
@@ -97,6 +101,7 @@ require_once 'includes/sidebar.php';
 
     <div class="bg-gray-900 rounded-2xl border border-gray-800 p-6">
         <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            <?php CSRF::renderInput(); ?>
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Client Name *</label>
                 <input type="text" id="name" name="name" required

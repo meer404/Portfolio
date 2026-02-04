@@ -4,6 +4,10 @@
  */
 
 require_once 'auth.php';
+require_once 'includes/CSRF.php';
+require_once 'includes/Security.php';
+
+Security::headers();
 
 // Redirect if already logged in
 if (Auth::isLoggedIn()) {
@@ -15,16 +19,23 @@ $error = '';
 
 // Handle login form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
-
-    if (empty($username) || empty($password)) {
-        $error = 'Please enter both username and password';
-    } elseif (Auth::login($username, $password)) {
-        header('Location: index.php');
-        exit;
+    if (!CSRF::verifyToken($_POST['csrf_token'] ?? null)) {
+        $error = 'Session expired or invalid request. Please reload and try again.';
     } else {
-        $error = 'Invalid username or password';
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
+
+        if (empty($username) || empty($password)) {
+            $error = 'Please enter both username and password';
+        } else {
+            $result = Auth::login($username, $password);
+            if ($result['success']) {
+                header('Location: index.php');
+                exit;
+            } else {
+                $error = $result['error'];
+            }
+        }
     }
 }
 ?>
@@ -62,6 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" class="space-y-6">
+                <?php CSRF::renderInput(); ?>
+                
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
                     <input type="text" id="username" name="username" required

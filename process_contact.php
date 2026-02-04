@@ -15,6 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 require_once 'lang.php';
 require_once 'db.php';
+require_once 'admin/includes/CSRF.php';
+
+// Verify CSRF Token
+if (!CSRF::verifyToken($_POST['csrf_token'] ?? null)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Invalid or expired session. Please refresh the page.']);
+    exit;
+}
 
 // Get and sanitize input
 $name = isset($_POST['name']) ? trim(htmlspecialchars($_POST['name'], ENT_QUOTES, 'UTF-8')) : '';

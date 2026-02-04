@@ -4,6 +4,10 @@
  * Manage Hero, About, Resume, and Contact sections
  */
 $pageTitle = 'Site Settings';
+// Include auth first to ensure authentication before any processing
+require_once 'auth.php';
+Auth::requireLogin();
+
 require_once 'includes/header.php';
 require_once 'includes/sidebar.php';
 require_once 'includes/image_helper.php';
@@ -14,123 +18,118 @@ $messageType = '';
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $settings = [];
-    
-    // Hero Section - English
-    if (isset($_POST['hero_greeting'])) {
-        $settings['hero_greeting'] = $_POST['hero_greeting'];
-        $settings['hero_name'] = $_POST['hero_name'];
-        $settings['hero_title'] = $_POST['hero_title'];
-        $settings['hero_description'] = $_POST['hero_description'];
-        // Kurdish
-        $settings['hero_greeting_ku'] = $_POST['hero_greeting_ku'] ?? '';
-        $settings['hero_title_ku'] = $_POST['hero_title_ku'] ?? '';
-        $settings['hero_description_ku'] = $_POST['hero_description_ku'] ?? '';
-    }
-    
-    // Handle hero image upload
-    if (isset($_FILES['hero_image']) && $_FILES['hero_image']['error'] === UPLOAD_ERR_OK) {
-        try {
-            $uploadDir = '../uploads/';
-            $newFilename = ImageHelper::processUpload($_FILES['hero_image'], $uploadDir, 'hero_');
-            $settings['hero_image'] = 'uploads/' . $newFilename;
-        } catch (Exception $e) {
-            // Note: site settings errors handling isn't as robust in original file (using $message var)
-            // But we should probably set $message if we fail, but the flow continues...
-            // Let's just catch and ignore or set a global error if possible?
-            // The original file sets $message at the end.
-            // Let's append to a temporary error or just log/ignore for now as the loop continues?
-            // Actually, we can just fail silently on image and let text save, or we can try to surface it.
-            // But complex to surface in the middle of this block.
-            // I'll leave it as non-interrupting but maybe echo? No.
-            // I'll throw and let it bubble if I want to stop saving? No.
-            // I will set $message = 'Image upload failed: '... but that might be overwritten.
-            // I'll just skip the assignment to settings if it fails, essentially.
-        }
-    }
-    
-    // About Section - English
-    if (isset($_POST['about_title'])) {
-        $settings['about_title'] = $_POST['about_title'];
-        $settings['about_paragraph1'] = $_POST['about_paragraph1'];
-        $settings['about_paragraph2'] = $_POST['about_paragraph2'];
-        $settings['about_experience'] = $_POST['about_experience'];
-        $settings['about_projects'] = $_POST['about_projects'];
-        $settings['about_clients'] = $_POST['about_clients'];
-        // Kurdish
-        $settings['about_title_ku'] = $_POST['about_title_ku'] ?? '';
-        $settings['about_paragraph1_ku'] = $_POST['about_paragraph1_ku'] ?? '';
-        $settings['about_paragraph2_ku'] = $_POST['about_paragraph2_ku'] ?? '';
-        $settings['about_experience_ku'] = $_POST['about_experience_ku'] ?? '';
-        $settings['about_projects_ku'] = $_POST['about_projects_ku'] ?? '';
-        $settings['about_clients_ku'] = $_POST['about_clients_ku'] ?? '';
-    }
-    
-    // Resume Section - Experience (JSON with Kurdish support)
-    if (isset($_POST['exp_period'])) {
-        $experience = [];
-        foreach ($_POST['exp_period'] as $i => $period) {
-            if (!empty($period) || !empty($_POST['exp_title'][$i])) {
-                $experience[] = [
-                    'period' => $period,
-                    'title' => $_POST['exp_title'][$i] ?? '',
-                    'title_ku' => $_POST['exp_title_ku'][$i] ?? '',
-                    'company' => $_POST['exp_company'][$i] ?? '',
-                    'company_ku' => $_POST['exp_company_ku'][$i] ?? '',
-                    'description' => $_POST['exp_description'][$i] ?? '',
-                    'description_ku' => $_POST['exp_description_ku'][$i] ?? ''
-                ];
-            }
-        }
-        $settings['resume_experience'] = json_encode($experience);
-    }
-    
-    // Resume Section - Education (JSON with Kurdish support)
-    if (isset($_POST['edu_period'])) {
-        $education = [];
-        foreach ($_POST['edu_period'] as $i => $period) {
-            if (!empty($period) || !empty($_POST['edu_title'][$i])) {
-                $education[] = [
-                    'period' => $period,
-                    'title' => $_POST['edu_title'][$i] ?? '',
-                    'title_ku' => $_POST['edu_title_ku'][$i] ?? '',
-                    'institution' => $_POST['edu_institution'][$i] ?? '',
-                    'institution_ku' => $_POST['edu_institution_ku'][$i] ?? '',
-                    'description' => $_POST['edu_description'][$i] ?? '',
-                    'description_ku' => $_POST['edu_description_ku'][$i] ?? ''
-                ];
-            }
-        }
-        $settings['resume_education'] = json_encode($education);
-    }
-    
-    // Handle resume PDF upload
-    if (isset($_FILES['resume_file']) && $_FILES['resume_file']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = '../uploads/';
-        $fileName = 'resume_' . time() . '.pdf';
-        $targetPath = $uploadDir . $fileName;
-        if (move_uploaded_file($_FILES['resume_file']['tmp_name'], $targetPath)) {
-            $settings['resume_file'] = 'uploads/' . $fileName;
-        }
-    }
-    
-    // Contact Section
-    if (isset($_POST['contact_email'])) {
-        $settings['contact_email'] = $_POST['contact_email'];
-        $settings['contact_location'] = $_POST['contact_location'];
-        $settings['contact_phone'] = $_POST['contact_phone'];
-        $settings['social_github'] = $_POST['social_github'];
-        $settings['social_linkedin'] = $_POST['social_linkedin'];
-        $settings['social_twitter'] = $_POST['social_twitter'];
-        $settings['social_instagram'] = $_POST['social_instagram'];
-    }
-    
-    if (!empty($settings) && $db->updateSettings($settings)) {
-        $message = 'Settings saved successfully!';
-        $messageType = 'success';
-    } else {
-        $message = 'Failed to save settings.';
+    if (!CSRF::verifyToken($_POST['csrf_token'] ?? null)) {
+        $message = 'Session expired or invalid request. Please reload and try again.';
         $messageType = 'error';
+    } else {
+        $settings = [];
+        
+        // Hero Section - English
+        if (isset($_POST['hero_greeting'])) {
+            $settings['hero_greeting'] = $_POST['hero_greeting'];
+            $settings['hero_name'] = $_POST['hero_name'];
+            $settings['hero_title'] = $_POST['hero_title'];
+            $settings['hero_description'] = $_POST['hero_description'];
+            // Kurdish
+            $settings['hero_greeting_ku'] = $_POST['hero_greeting_ku'] ?? '';
+            $settings['hero_title_ku'] = $_POST['hero_title_ku'] ?? '';
+            $settings['hero_description_ku'] = $_POST['hero_description_ku'] ?? '';
+        }
+        
+        // Handle hero image upload
+        if (isset($_FILES['hero_image']) && $_FILES['hero_image']['error'] === UPLOAD_ERR_OK) {
+            try {
+                $uploadDir = '../uploads/';
+                $newFilename = ImageHelper::processUpload($_FILES['hero_image'], $uploadDir, 'hero_');
+                $settings['hero_image'] = 'uploads/' . $newFilename;
+            } catch (Exception $e) {
+                // Silently fail for now, or log error
+            }
+        }
+        
+        // About Section - English
+        if (isset($_POST['about_title'])) {
+            $settings['about_title'] = $_POST['about_title'];
+            $settings['about_paragraph1'] = $_POST['about_paragraph1'];
+            $settings['about_paragraph2'] = $_POST['about_paragraph2'];
+            $settings['about_experience'] = $_POST['about_experience'];
+            $settings['about_projects'] = $_POST['about_projects'];
+            $settings['about_clients'] = $_POST['about_clients'];
+            // Kurdish
+            $settings['about_title_ku'] = $_POST['about_title_ku'] ?? '';
+            $settings['about_paragraph1_ku'] = $_POST['about_paragraph1_ku'] ?? '';
+            $settings['about_paragraph2_ku'] = $_POST['about_paragraph2_ku'] ?? '';
+            $settings['about_experience_ku'] = $_POST['about_experience_ku'] ?? '';
+            $settings['about_projects_ku'] = $_POST['about_projects_ku'] ?? '';
+            $settings['about_clients_ku'] = $_POST['about_clients_ku'] ?? '';
+        }
+        
+        // Resume Section - Experience (JSON with Kurdish support)
+        if (isset($_POST['exp_period'])) {
+            $experience = [];
+            foreach ($_POST['exp_period'] as $i => $period) {
+                if (!empty($period) || !empty($_POST['exp_title'][$i])) {
+                    $experience[] = [
+                        'period' => $period,
+                        'title' => $_POST['exp_title'][$i] ?? '',
+                        'title_ku' => $_POST['exp_title_ku'][$i] ?? '',
+                        'company' => $_POST['exp_company'][$i] ?? '',
+                        'company_ku' => $_POST['exp_company_ku'][$i] ?? '',
+                        'description' => $_POST['exp_description'][$i] ?? '',
+                        'description_ku' => $_POST['exp_description_ku'][$i] ?? ''
+                    ];
+                }
+            }
+            $settings['resume_experience'] = json_encode($experience);
+        }
+        
+        // Resume Section - Education (JSON with Kurdish support)
+        if (isset($_POST['edu_period'])) {
+            $education = [];
+            foreach ($_POST['edu_period'] as $i => $period) {
+                if (!empty($period) || !empty($_POST['edu_title'][$i])) {
+                    $education[] = [
+                        'period' => $period,
+                        'title' => $_POST['edu_title'][$i] ?? '',
+                        'title_ku' => $_POST['edu_title_ku'][$i] ?? '',
+                        'institution' => $_POST['edu_institution'][$i] ?? '',
+                        'institution_ku' => $_POST['edu_institution_ku'][$i] ?? '',
+                        'description' => $_POST['edu_description'][$i] ?? '',
+                        'description_ku' => $_POST['edu_description_ku'][$i] ?? ''
+                    ];
+                }
+            }
+            $settings['resume_education'] = json_encode($education);
+        }
+        
+        // Handle resume PDF upload
+        if (isset($_FILES['resume_file']) && $_FILES['resume_file']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = '../uploads/';
+            $fileName = 'resume_' . time() . '.pdf';
+            $targetPath = $uploadDir . $fileName;
+            if (move_uploaded_file($_FILES['resume_file']['tmp_name'], $targetPath)) {
+                $settings['resume_file'] = 'uploads/' . $fileName;
+            }
+        }
+        
+        // Contact Section
+        if (isset($_POST['contact_email'])) {
+            $settings['contact_email'] = $_POST['contact_email'];
+            $settings['contact_location'] = $_POST['contact_location'];
+            $settings['contact_phone'] = $_POST['contact_phone'];
+            $settings['social_github'] = $_POST['social_github'];
+            $settings['social_linkedin'] = $_POST['social_linkedin'];
+            $settings['social_twitter'] = $_POST['social_twitter'];
+            $settings['social_instagram'] = $_POST['social_instagram'];
+        }
+        
+        if (!empty($settings) && $db->updateSettings($settings)) {
+            $message = 'Settings saved successfully!';
+            $messageType = 'success';
+        } else {
+            $message = 'Failed to save settings.';
+            $messageType = 'error';
+        }
     }
 }
 

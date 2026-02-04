@@ -33,48 +33,52 @@ if ($isEdit) {
 
 // Handle form submission - BEFORE any HTML output
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title'] ?? '');
-    $title_ku = trim($_POST['title_ku'] ?? '');
-    $content = trim($_POST['content'] ?? '');
-    $content_ku = trim($_POST['content_ku'] ?? '');
-    $image_url = $blog['image_url'] ?? '';
+    if (!CSRF::verifyToken($_POST['csrf_token'] ?? null)) {
+        $errors[] = 'Session expired or invalid request. Please reload and try again.';
+    } else {
+        $title = trim($_POST['title'] ?? '');
+        $title_ku = trim($_POST['title_ku'] ?? '');
+        $content = trim($_POST['content'] ?? '');
+        $content_ku = trim($_POST['content_ku'] ?? '');
+        $image_url = $blog['image_url'] ?? '';
 
-    if (empty($title)) $errors[] = 'Title (English) is required';
-    if (empty($content)) $errors[] = 'Content (English) is required';
+        if (empty($title)) $errors[] = 'Title (English) is required';
+        if (empty($content)) $errors[] = 'Content (English) is required';
 
-    // Handle image upload
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        try {
-            // Upload directory
-            $uploadDir = '../uploads/blogs/';
-            $newFilename = ImageHelper::processUpload($_FILES['image'], $uploadDir, 'blog_');
-            
-            // Delete old image if editing
-            if ($isEdit && !empty($blog['image_url']) && strpos($blog['image_url'], 'uploads/') !== false) {
-                $oldFile = '../' . $blog['image_url'];
-                if (file_exists($oldFile)) {
-                    unlink($oldFile);
+        // Handle image upload
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            try {
+                // Upload directory
+                $uploadDir = '../uploads/blogs/';
+                $newFilename = ImageHelper::processUpload($_FILES['image'], $uploadDir, 'blog_');
+                
+                // Delete old image if editing
+                if ($isEdit && !empty($blog['image_url']) && strpos($blog['image_url'], 'uploads/') !== false) {
+                    $oldFile = '../' . $blog['image_url'];
+                    if (file_exists($oldFile)) {
+                        unlink($oldFile);
+                    }
                 }
+                $image_url = 'uploads/blogs/' . $newFilename;
+            } catch (Exception $e) {
+                $errors[] = $e->getMessage();
             }
-            $image_url = 'uploads/blogs/' . $newFilename;
-        } catch (Exception $e) {
-            $errors[] = $e->getMessage();
         }
-    }
 
-    if (empty($errors)) {
-        try {
-            if ($isEdit) {
-                $stmt = $db->prepare("UPDATE blogs SET title = ?, title_ku = ?, content = ?, content_ku = ?, image_url = ? WHERE id = ?");
-                $stmt->execute([$title, $title_ku, $content, $content_ku, $image_url, $_GET['id']]);
-            } else {
-                $stmt = $db->prepare("INSERT INTO blogs (title, title_ku, content, content_ku, image_url) VALUES (?, ?, ?, ?, ?)");
-                $stmt->execute([$title, $title_ku, $content, $content_ku, $image_url]);
+        if (empty($errors)) {
+            try {
+                if ($isEdit) {
+                    $stmt = $db->prepare("UPDATE blogs SET title = ?, title_ku = ?, content = ?, content_ku = ?, image_url = ? WHERE id = ?");
+                    $stmt->execute([$title, $title_ku, $content, $content_ku, $image_url, $_GET['id']]);
+                } else {
+                    $stmt = $db->prepare("INSERT INTO blogs (title, title_ku, content, content_ku, image_url) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->execute([$title, $title_ku, $content, $content_ku, $image_url]);
+                }
+                header('Location: blogs.php');
+                exit;
+            } catch (Exception $e) {
+                $errors[] = 'Failed to save blog post';
             }
-            header('Location: blogs.php');
-            exit;
-        } catch (Exception $e) {
-            $errors[] = 'Failed to save blog post';
         }
     }
 }
@@ -111,7 +115,8 @@ require_once 'includes/sidebar.php';
 
     <div class="bg-gray-900 rounded-2xl border border-gray-800 p-6">
         <form method="POST" enctype="multipart/form-data" class="space-y-6">
-            
+            <?php CSRF::renderInput(); ?>
+
             <!-- Language Tabs -->
             <div class="lang-tabs">
                 <div class="lang-tab active" onclick="switchLang('en')">🇬🇧 English</div>

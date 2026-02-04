@@ -1,12 +1,24 @@
 <?php
 /**
  * Admin Authentication Helper
- * Handles session management and access control
+ * Handles session management, access control, and security
  */
 
-session_start();
+// Secure session parameters
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '', // Current domain
+        'secure' => isset($_SERVER['HTTPS']), // True if HTTPS
+        'httponly' => true,
+        'samesite' => 'Strict'
+    ]);
+    session_start();
+}
 
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/includes/CSRF.php';
 
 class Auth {
     /**
@@ -27,25 +39,68 @@ class Auth {
     }
 
     /**
-     * Attempt to log in user
+     * Attempt to log in user with Rate Limiting
      */
-    public static function login(string $username, string $password): bool {
+    public static function login(string $username, string $password): array {
+        $db = Database::getInstance()->getConnection();
+        $ip = $_SERVER['REMOTE_ADDR'];
+
+        // 1. Check Rate Limit
+        if (self::isRateLimited($db, $ip)) {
+            return ['success' => false, 'error' => 'Too many login attempts. Please wait 15 minutes.'];
+        }
+
         try {
-            $db = Database::getInstance()->getConnection();
             $stmt = $db->prepare("SELECT id, username, password FROM admins WHERE username = ?");
             $stmt->execute([$username]);
             $admin = $stmt->fetch();
 
             if ($admin && password_verify($password, $admin['password'])) {
+                // Login Success
+                session_regenerate_id(true); // Prevent session fixation
                 $_SESSION['admin_id'] = $admin['id'];
                 $_SESSION['admin_username'] = $admin['username'];
-                return true;
+                
+                // Clear previous failed attempts
+                self::clearLoginAttempts($db, $ip);
+                
+                return ['success' => true];
             }
-            return false;
+            
+            // Login Failed
+            self::recordLoginAttempt($db, $ip);
+            return ['success' => false, 'error' => 'Invalid username or password'];
+
         } catch (Exception $e) {
             error_log("Login error: " . $e->getMessage());
-            return false;
+            return ['success' => false, 'error' => 'An error occurred. Please try again.'];
         }
+    }
+
+    /**
+     * Check if IP is rate limited (5 attempts in 15 mins)
+     */
+    private static function isRateLimited(PDO $db, string $ip): bool {
+        $stmt = $db->prepare("SELECT COUNT(*) FROM login_attempts WHERE ip_address = ? AND attempt_time > (NOW() - INTERVAL 15 MINUTE)");
+        $stmt->execute([$ip]);
+        $count = $stmt->fetchColumn();
+        return $count >= 5;
+    }
+
+    /**
+     * Record a failed login attempt
+     */
+    private static function recordLoginAttempt(PDO $db, string $ip): void {
+        $stmt = $db->prepare("INSERT INTO login_attempts (ip_address, attempt_time) VALUES (?, NOW())");
+        $stmt->execute([$ip]);
+    }
+
+    /**
+     * Clear login attempts after successful login
+     */
+    private static function clearLoginAttempts(PDO $db, string $ip): void {
+        $stmt = $db->prepare("DELETE FROM login_attempts WHERE ip_address = ?");
+        $stmt->execute([$ip]);
     }
 
     /**
@@ -63,16 +118,10 @@ class Auth {
         session_destroy();
     }
 
-    /**
-     * Get current admin username
-     */
     public static function getUsername(): string {
         return $_SESSION['admin_username'] ?? 'Admin';
     }
 
-    /**
-     * Get current admin ID
-     */
     public static function getAdminId(): int {
         return $_SESSION['admin_id'] ?? 0;
     }

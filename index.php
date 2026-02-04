@@ -7,6 +7,7 @@
 require_once 'lang.php';
 require_once 'db.php';
 require_once 'seo.php';
+require_once 'admin/includes/CSRF.php';
 
 // Fetch data from database (limited for homepage)
 try {
@@ -703,6 +704,7 @@ $seoTwitter = getSetting('social_twitter', '');
                 <!-- Contact Form -->
                 <div class="animate-on-scroll">
                     <form id="contact-form" class="glass-card rounded-2xl p-8" data-error-message="<?= t('form.generic_error') ?>">
+                        <?php CSRF::renderInput(); ?>
                         <div class="grid sm:grid-cols-2 gap-6 mb-6">
                             <div>
                                 <label for="name" class="block text-sm font-medium mb-2"><?= t('contact.your_name') ?></label>
